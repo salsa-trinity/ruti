@@ -56,7 +56,7 @@ impl Api {
                                 tx.send("ESC").unwrap();
                                 std::process::exit(1);
                             }
-                            termion::event::Key::Char('s') => {
+                            termion::event::Key::Char(' ') => {
                                 tx.send("PAUSE").unwrap();
                             }
                             _ => {}
@@ -64,8 +64,9 @@ impl Api {
                     }
                 });
 
-                let sw_start = std::time::Instant::now();
+                let mut sw_start = std::time::Instant::now();
                 let mut is_running = true;
+                let mut pause_start = sw_start;
                 loop {
                     if is_running {
                         print!(
@@ -82,6 +83,12 @@ impl Api {
                         }
                         Ok("PAUSE") => {
                             is_running = !is_running;
+                            if !is_running {
+                                pause_start = std::time::Instant::now();
+                            } else {
+                                sw_start += pause_start.elapsed();
+                                continue;
+                            }
                         }
                         _ => {}
                     }

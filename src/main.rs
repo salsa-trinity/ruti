@@ -10,7 +10,7 @@ fn main() {
 // ruti sw
 // ruti stopwatch
 // # starts a stopwatch, which once started, begins to do input handling:
-//      - s: start stop the time (pause, not reset)
+//      - esp: start stop the time (pause, not reset)
 //      - esc: reset stopwatch and exit ruti
 //      - l: add a new lap and print it after the previous lap. (note. the time is below the laps)
 //
