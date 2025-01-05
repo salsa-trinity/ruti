@@ -7,13 +7,6 @@ fn main() {
     api.main();
 }
 
-// ruti sw
-// ruti stopwatch
-// # starts a stopwatch, which once started, begins to do input handling:
-//      - esp: start stop the time (pause, not reset)
-//      - esc: reset stopwatch and exit ruti
-//      - l: add a new lap and print it after the previous lap. (note. the time is below the laps)
-//
 // ruti cd
 // ruti countdown
 // # starts a countdown, which one started, initializes input handling:
