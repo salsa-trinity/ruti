@@ -56,28 +56,32 @@ impl Api {
                                 tx.send("ESC").unwrap();
                                 std::process::exit(1);
                             }
+                            termion::event::Key::Char('s') => {
+                                tx.send("PAUSE").unwrap();
+                            }
                             _ => {}
                         }
                     }
                 });
 
                 let sw_start = std::time::Instant::now();
+                let mut is_running = true;
                 loop {
-                    print!(
-                        "\rTime: {}s",
-                        sw_start.elapsed().as_millis() as f32 / 1000f32
-                    );
+                    if is_running {
+                        print!(
+                            "\rTime: {}s",
+                            sw_start.elapsed().as_millis() as f32 / 1000f32
+                        );
+                    }
                     std::io::stdout().flush().unwrap();
                     match rx.try_recv() {
                         Ok("ESC") => {
-                            //println!("");
                             print!("\n\rExited successfully.\n\r");
                             std::io::stdout().flush().unwrap();
                             break;
                         }
-                        Ok(_) => {
-                            println!("help");
-                            break;
+                        Ok("PAUSE") => {
+                            is_running = !is_running;
                         }
                         _ => {}
                     }

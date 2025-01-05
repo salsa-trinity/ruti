@@ -8,8 +8,8 @@
 
 ## Install Guide
 
-1. Clone the repo with: `git clone https://github.com/salsa-trinity/rusty-tick`
+1. Clone the repo with: `git clone https://github.com/salsa-trinity/ruti`
 2. Cd into the directory.
 3. Run: `cargo build --release`, to compile.
-4. Add to path with: `mv target/release/rusty-tick ~/.cargo/bin/ruti`
+4. Add to path with: `mv target/release/ruti ~/.cargo/bin/ruti`
 
