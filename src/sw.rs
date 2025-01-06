@@ -1,8 +1,10 @@
+use crate::api::ApiFlags;
 use std::io::Write;
 use termion::{input::TermRead, raw::IntoRawMode};
 
-pub fn main() {
+pub fn main(flags: ApiFlags) {
     let (tx, rx) = std::sync::mpsc::channel::<&str>();
+    let tx2 = tx.clone();
     let _stdout = std::io::stdout().into_raw_mode().unwrap();
     // i don't know why, but changing the name to _ breaks it :(
 
@@ -10,7 +12,7 @@ pub fn main() {
         crate::sw::listener_thread(tx);
     });
 
-    crate::sw::loop_thread(rx);
+    crate::sw::loop_thread(rx, tx2, &flags);
 }
 
 fn listener_thread(tx: std::sync::mpsc::Sender<&str>) {
@@ -32,7 +34,11 @@ fn listener_thread(tx: std::sync::mpsc::Sender<&str>) {
     }
 }
 
-fn loop_thread(rx: std::sync::mpsc::Receiver<&str>) {
+fn loop_thread(
+    rx: std::sync::mpsc::Receiver<&str>,
+    tx2: std::sync::mpsc::Sender<&str>,
+    flags: &ApiFlags,
+) {
     let mut total_time = std::time::Duration::from_secs(0);
     let mut is_running = true;
     let mut lap_count = 0;
@@ -46,6 +52,9 @@ fn loop_thread(rx: std::sync::mpsc::Receiver<&str>) {
             }
             Ok("PAUSE") => {
                 is_running = !is_running;
+                if !is_running && flags.pl {
+                    tx2.send("LAP").unwrap();
+                }
             }
             Ok("LAP") => {
                 println!(
