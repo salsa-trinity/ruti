@@ -9,7 +9,7 @@ enum ApiState {
 #[derive(Clone)]
 pub struct ApiFlags {
     pub pl: bool,
-    pub len: u64,
+    pub len: f64,
     pub len_defined: bool,
 }
 
@@ -17,7 +17,7 @@ impl ApiFlags {
     fn new() -> ApiFlags {
         ApiFlags {
             pl: false,
-            len: 0,
+            len: 0f64,
             len_defined: false,
         }
     }
@@ -88,8 +88,7 @@ impl Api {
             std::process::exit(1);
         }
         // ensure length is given to cd
-        else if self.state != ApiState::BgCd
-            && self.state != ApiState::Cd
+        else if (self.state == ApiState::BgCd || self.state == ApiState::Cd)
             && !self.flags.len_defined
         {
             println!("ERROR: must specify a length for cd command.");
@@ -104,7 +103,7 @@ impl Api {
                 std::process::exit(1);
             }
             ApiState::Sw => crate::sw::main(self.flags.clone()),
-            ApiState::BgCd => crate::bgcd::main(),
+            ApiState::BgCd => crate::bgcd::main(self.flags.len, "TODO: test name".to_string()),
             ApiState::Cd => {}
         }
     }

@@ -1,4 +1,5 @@
 fn main() {
+    std::env::set_var("RUST_BACKTRACE", "1");
     let mut flags: Vec<String> = std::env::args().collect();
     flags.remove(0);
 
