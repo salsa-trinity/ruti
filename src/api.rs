@@ -36,6 +36,9 @@ impl Api {
         }
     }
 
+    // TODO:
+    // - argument for specifing a custom timer name.
+    // - file for ensuring different cd have different names by default.
     pub fn process_flags(&mut self, flags: Vec<String>) {
         let mut state_change_counter = 0;
         for flag in flags {
@@ -103,7 +106,7 @@ impl Api {
                 std::process::exit(1);
             }
             ApiState::Sw => crate::sw::main(self.flags.clone()),
-            ApiState::BgCd => crate::bgcd::main(self.flags.len, "TODO: test name".to_string()),
+            ApiState::BgCd => crate::bgcd::main(self.flags.len, "cd_0".to_string()),
             ApiState::Cd => {}
         }
     }
