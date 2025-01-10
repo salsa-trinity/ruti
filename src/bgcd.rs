@@ -83,10 +83,15 @@ pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
     // TODO:
     // - flag for customizing the update_time
     // - file for ensuring different cd have different names by default.
-    // - ensure -n is only used once
     for arg in &args {
         match arg as &str {
-            "-n" | "--name" => flags.name_defined = 1,
+            "-n" | "--name" => {
+                flags.name_defined += 1;
+                if flags.name_defined > 1 {
+                    println!("Please only use the -n flag once.");
+                    std::process::exit(1);
+                }
+            }
             _ => {
                 match arg.parse() {
                     Ok(a) => {
