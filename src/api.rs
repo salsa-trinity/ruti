@@ -11,6 +11,8 @@ pub struct ApiFlags {
     pub pl: bool,
     pub len: f64,
     pub len_defined: bool,
+    pub name: String,
+    pub name_defined: i32,
 }
 
 impl ApiFlags {
@@ -19,13 +21,15 @@ impl ApiFlags {
             pl: false,
             len: 0f64,
             len_defined: false,
+            name: String::new(),
+            name_defined: 0,
         }
     }
 }
 
 pub struct Api {
     state: ApiState,
-    flags: ApiFlags,
+    pub flags: ApiFlags,
 }
 
 impl Api {
@@ -36,13 +40,17 @@ impl Api {
         }
     }
 
-    // TODO:
-    // - argument for specifing a custom timer name.
-    // - file for ensuring different cd have different names by default.
-    pub fn process_flags(&mut self, flags: Vec<String>) {
+    pub fn main_flags(&mut self, mut args: Vec<String>) {
+        // empty
+        if args.len() == 0 {
+            println!("Please provide an argument. Use -h for available commands");
+            std::process::exit(1);
+        }
+
+        // base commands
         let mut state_change_counter = 0;
-        for flag in flags {
-            match &flag as &str {
+        for arg in &args {
+            match arg as &str {
                 "sw" | "stopwatch" => {
                     self.state = ApiState::Sw;
                     state_change_counter += 1;
@@ -55,63 +63,47 @@ impl Api {
                     self.state = ApiState::BgCd;
                     state_change_counter += 1;
                 }
-                "-h" | "--help" => Api::flag_h(),
-                "-pl" | "--pause-lap" => self.flags.pl = true,
-                _ => {
-                    self.flags.len = match flag.trim().parse() {
-                        Ok(num) => {
-                            self.flags.len_defined = true;
-                            num
-                        }
-                        Err(_) => {
-                            println!("ERROR: Not a valid argument, use -h for list of arguments.");
-                            std::process::exit(1);
-                        }
-                    };
+
+                "-h" | "--help" | "help" => {
+                    Api::flag_h();
+                    std::process::exit(1);
                 }
+                _ => {}
             }
         }
+        // TODO: -h (sw,cd,bgcd)
 
-        // make sure only one mode is used at the time
-        if state_change_counter >= 2 {
-            println!("ERROR: only a single mode can be used at the time.");
+        // only one base command
+        if state_change_counter > 1 {
+            println!("Please only use one mode at the time.");
             std::process::exit(1);
         }
-        // ensure -pl flag is only used with sw
-        else if self.flags.pl && self.state != ApiState::Sw {
-            println!("ERROR: -pl flag must only be used with the sw command.");
-            std::process::exit(1);
-        }
-        // make sure length is only specified with cd
-        else if self.state != ApiState::BgCd
-            && self.state != ApiState::Cd
-            && self.flags.len_defined
-        {
-            println!("ERROR: length must not be specified with a command other than cd.");
-            std::process::exit(1);
-        }
-        // ensure length is given to cd
-        else if (self.state == ApiState::BgCd || self.state == ApiState::Cd)
-            && !self.flags.len_defined
-        {
-            println!("ERROR: must specify a length for cd command.");
-            std::process::exit(1);
+        args.remove(0);
+        println!("FLAGS: {:?}", args);
+
+        match self.state {
+            ApiState::Sw => crate::sw::sw_flags(&mut self.flags, args),
+            ApiState::Cd | ApiState::BgCd => crate::bgcd::bgcd_flags(&mut self.flags, args),
+            _ => {
+                println!("Failed to fail x2");
+                std::process::exit(1);
+            }
         }
     }
 
     pub fn main(&mut self) {
         match self.state {
             ApiState::Init => {
-                println!("Please give a valid argument, use -h for list of arguments.");
+                println!("Please give a valid argument, use -h for a list of arguments.");
                 std::process::exit(1);
             }
             ApiState::Sw => crate::sw::main(self.flags.clone()),
-            ApiState::BgCd => crate::bgcd::main(self.flags.len, "cd_0".to_string()),
+            ApiState::BgCd => crate::bgcd::main(self.flags.len, self.flags.name.clone()),
             ApiState::Cd => {}
         }
     }
 
     fn flag_h() {
-        todo!("implement flag_h funcition");
+        todo!("TODO: implement flag_h funcition");
     }
 }

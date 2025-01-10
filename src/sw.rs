@@ -80,3 +80,15 @@ fn loop_thread(
         }
     }
 }
+
+pub fn sw_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
+    for arg in &args {
+        match arg as &str {
+            "-pl" | "--pause-lap" => flags.pl = true,
+            _ => {
+                println!("Please give a valid command for sw. See available commands with -h sw");
+                std::process::exit(1);
+            }
+        }
+    }
+}

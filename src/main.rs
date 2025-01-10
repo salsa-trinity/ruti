@@ -1,10 +1,10 @@
 fn main() {
     std::env::set_var("RUST_BACKTRACE", "1");
-    let mut flags: Vec<String> = std::env::args().collect();
-    flags.remove(0);
+    let mut args: Vec<String> = std::env::args().collect();
+    args.remove(0);
 
     let mut api = ruti::api::Api::new();
-    api.process_flags(flags);
+    api.main_flags(args);
     api.main();
 }
 

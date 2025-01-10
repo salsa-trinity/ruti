@@ -78,3 +78,45 @@ pub fn main(len: f64, p_name: String) {
 
     std::fs::remove_file(path).unwrap();
 }
+
+pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
+    // TODO:
+    // - flag for customizing the update_time
+    // - file for ensuring different cd have different names by default.
+    // - ensure -n is only used once
+    for arg in &args {
+        match arg as &str {
+            "-n" | "--name" => flags.name_defined = 1,
+            _ => {
+                match arg.parse() {
+                    Ok(a) => {
+                        // len
+                        if !flags.len_defined {
+                            flags.len = a;
+                            flags.len_defined = true;
+                        }
+                    }
+                    Err(_) => {
+                        // name
+                        if flags.name_defined == 1 {
+                            flags.name = arg.to_string();
+                            flags.name_defined += 1;
+                        }
+                    }
+                }
+            }
+        }
+    }
+    if !flags.len_defined {
+        println!("Please give a length.");
+        std::process::exit(1);
+    }
+    if flags.len_defined && flags.len <= 0f64 {
+        println!("Please provide a valid length.");
+        std::process::exit(1);
+    }
+    if flags.name_defined != 0 && flags.name.is_empty() {
+        print!("Flag -n used, but no name was given.");
+        std::process::exit(1);
+    }
+}
