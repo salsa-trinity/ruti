@@ -1,13 +1,13 @@
 use std::io::Write;
 
-pub fn main(len: f64, p_name: String) {
+pub fn main(len: f64, p_name: String, u_time: f64) {
     let life = std::time::Instant::now();
     let mut target = std::time::Duration::from_secs_f64(len);
 
     // time_update makes it so that every n seconds,
     // you update the file containing the cd data
     // TODO: config for time_update
-    let time_update = std::time::Duration::from_secs(2);
+    let time_update = std::time::Duration::from_secs_f64(u_time);
     let mut loop_time;
 
     println!("PID: {}, PN: {}, LEN: {}", std::process::id(), p_name, len);
@@ -81,7 +81,6 @@ pub fn main(len: f64, p_name: String) {
 
 pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
     // TODO:
-    // - flag for customizing the update_time
     // - file for ensuring different cd have different names by default.
     for arg in &args {
         match arg as &str {
@@ -92,6 +91,13 @@ pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
                     std::process::exit(1);
                 }
             }
+            "-ut" | "--update-time" => {
+                flags.u_time_defined += 1;
+                if flags.u_time_defined > 1 {
+                    println!("Please only use the -ut flag once.");
+                    std::process::exit(1);
+                }
+            }
             _ => {
                 match arg.parse() {
                     Ok(a) => {
@@ -99,6 +105,11 @@ pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
                         if !flags.len_defined {
                             flags.len = a;
                             flags.len_defined = true;
+                        }
+                        // utime
+                        if flags.u_time_defined == 1 {
+                            flags.u_time = a as f64;
+                            flags.u_time_defined += 1;
                         }
                     }
                     Err(_) => {
@@ -112,16 +123,29 @@ pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
             }
         }
     }
+    // ensure that a lenght is given
     if !flags.len_defined {
         println!("Please give a length.");
         std::process::exit(1);
     }
+    // ensure that the length is valid
     if flags.len_defined && flags.len <= 0f64 {
         println!("Please provide a valid length.");
         std::process::exit(1);
     }
+    // ensure that if -n is used, an value is passed
     if flags.name_defined != 0 && flags.name.is_empty() {
-        print!("Flag -n used, but no name was given.");
+        println!("Flag -n used, but no name was given.");
+        std::process::exit(1);
+    }
+    // ensure that utime is valid
+    if flags.u_time <= 0f64 {
+        println!("Please give a valid update time.");
+        std::process::exit(1);
+    }
+    // ensure that if -ut is used, an value is passed
+    if flags.u_time_defined % 2 != 0 {
+        println!("Flag -ut used, but no duration was given.");
         std::process::exit(1);
     }
 }

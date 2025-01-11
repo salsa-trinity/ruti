@@ -13,6 +13,8 @@ pub struct ApiFlags {
     pub len_defined: bool,
     pub name: String,
     pub name_defined: i32,
+    pub u_time: f64,
+    pub u_time_defined: i32,
 }
 
 impl ApiFlags {
@@ -23,6 +25,8 @@ impl ApiFlags {
             len_defined: false,
             name: String::new(),
             name_defined: 0,
+            u_time: 60f64,
+            u_time_defined: 0,
         }
     }
 }
@@ -98,7 +102,10 @@ impl Api {
                 std::process::exit(1);
             }
             ApiState::Sw => crate::sw::main(self.flags.clone()),
-            ApiState::BgCd => crate::bgcd::main(self.flags.len, self.flags.name.clone()),
+            ApiState::BgCd => {
+                crate::bgcd::main(self.flags.len, self.flags.name.clone(), self.flags.u_time)
+            }
+
             ApiState::Cd => {}
         }
     }
