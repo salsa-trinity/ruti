@@ -1,16 +1,13 @@
 use std::io::Write;
 
-pub fn main(len: f64, p_name: String, u_time: f64) {
+pub fn main(len: f64, mut p_name: String, u_time: f64) {
     let life = std::time::Instant::now();
     let mut target = std::time::Duration::from_secs_f64(len);
 
     // time_update makes it so that every n seconds,
     // you update the file containing the cd data
-    // TODO: config for time_update
     let time_update = std::time::Duration::from_secs_f64(u_time);
     let mut loop_time;
-
-    println!("PID: {}, PN: {}, LEN: {}", std::process::id(), p_name, len);
 
     // file handling
     let path = match directories::ProjectDirs::from("com", "github", "ruti") {
@@ -20,13 +17,13 @@ pub fn main(len: f64, p_name: String, u_time: f64) {
             std::process::exit(1);
         }
     };
-    let path = path.data_local_dir();
-    if !std::fs::exists(path).unwrap() {
+    let data_path = path.data_local_dir();
+    if !std::fs::exists(data_path).unwrap() {
         println!("LOG: no directory found, creating a new one.");
-        std::fs::create_dir_all(path).unwrap();
+        std::fs::create_dir_all(data_path).unwrap();
     }
 
-    let path = path.join(std::process::id().to_string());
+    let path = data_path.join(std::process::id().to_string());
     std::fs::File::create(&path).unwrap();
     std::fs::OpenOptions::new()
         .append(true)
@@ -41,6 +38,50 @@ pub fn main(len: f64, p_name: String, u_time: f64) {
     let file: String = std::fs::read_to_string(&path).unwrap();
     let lines: Vec<&str> = file.lines().collect();
     let mut lines: Vec<String> = lines.iter().map(|s| s.to_string()).collect();
+
+    // default name
+    let mut name_num: i32 = -1;
+    let pn_path = data_path.join("pn");
+    if p_name.is_empty() {
+        if !std::fs::exists(&pn_path).unwrap() {
+            println!("LOG: creating a new pn file.");
+            std::fs::File::create(&pn_path).unwrap();
+        }
+        let mut lines: Vec<String> = std::fs::read_to_string(&pn_path)
+            .unwrap()
+            .lines()
+            .map(|s| s.to_string())
+            .collect();
+        let mut file = std::fs::File::options()
+            .append(true)
+            .open(&pn_path)
+            .unwrap();
+        if lines.is_empty() {
+            println!("INITING");
+            file.write_all(b"0").unwrap();
+            name_num = 0;
+        } else {
+            println!("ADDING");
+            let nums: Vec<i32> = lines.iter().map(|l| l.parse::<i32>().unwrap()).collect();
+            if nums.len() > 0 {
+                let mut i: i32 = 0;
+                loop {
+                    if !nums.contains(&i) {
+                        name_num = i;
+                        break;
+                    }
+                    i += 1;
+                }
+            } else {
+                name_num = lines.last().unwrap().parse::<i32>().unwrap() + 1;
+            }
+            lines.push("\n".to_string() + &name_num.to_string());
+            file.write_all(lines.last().unwrap().as_bytes()).unwrap();
+        }
+        p_name = "cd-".to_string() + &name_num.to_string();
+        println!("{:?}", lines);
+    }
+    println!("PID: {}, PN: {}, LEN: {}", std::process::id(), p_name, len);
 
     // sleep for x - n
     target -= life.elapsed();
@@ -77,11 +118,33 @@ pub fn main(len: f64, p_name: String, u_time: f64) {
     );
 
     std::fs::remove_file(path).unwrap();
+
+    // remove cd_name
+    if name_num > -1 {
+        let lines: Vec<String> = std::fs::read_to_string(&pn_path)
+            .unwrap()
+            .lines()
+            .map(|s| s.to_string())
+            .collect();
+        let mut new_lines = Vec::new();
+        for line in &lines {
+            if line.replace("cd-", "").parse::<i32>().unwrap() != name_num {
+                new_lines.push(line);
+            }
+        }
+        println!("new line: {:?}", new_lines);
+        let mut lines = String::new();
+        if new_lines.len() > 0 {
+            for i in 0..new_lines.len() - 1 {
+                lines += &(new_lines[i].to_owned() + "\n");
+            }
+            lines += new_lines[new_lines.len() - 1];
+        }
+        std::fs::write(pn_path, lines).unwrap();
+    }
 }
 
 pub fn bgcd_flags(flags: &mut crate::api::ApiFlags, args: Vec<String>) {
-    // TODO:
-    // - file for ensuring different cd have different names by default.
     for arg in &args {
         match arg as &str {
             "-n" | "--name" => {
