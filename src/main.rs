@@ -1,9 +1,11 @@
+use ruti::api::api::Api;
+use std::env;
 fn main() {
-    std::env::set_var("RUST_BACKTRACE", "1");
-    let mut args: Vec<String> = std::env::args().collect();
+    env::set_var("RUST_BACKTRACE", "1");
+    let mut args: Vec<String> = env::args().collect();
     args.remove(0);
 
-    let mut api = ruti::api::Api::new();
+    let mut api = Api::new();
     api.main_flags(args);
     api.main();
 }

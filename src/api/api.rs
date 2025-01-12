@@ -1,35 +1,8 @@
-#[derive(PartialEq)]
-enum ApiState {
-    Init,
-    Sw,
-    Cd,
-    BgCd,
-}
-
-#[derive(Clone)]
-pub struct ApiFlags {
-    pub pl: bool,
-    pub len: f64,
-    pub len_defined: bool,
-    pub name: String,
-    pub name_defined: i32,
-    pub u_time: f64,
-    pub u_time_defined: i32,
-}
-
-impl ApiFlags {
-    fn new() -> ApiFlags {
-        ApiFlags {
-            pl: false,
-            len: 0f64,
-            len_defined: false,
-            name: String::new(),
-            name_defined: 0,
-            u_time: 60f64,
-            u_time_defined: 0,
-        }
-    }
-}
+use crate::{
+    api::flags::ApiFlags, api::state::ApiState, bgcd::bgcd::bgcd_main, bgcd::flags::bgcd_flags,
+    sw::sw_flags, sw::sw_main,
+};
+use std::process;
 
 pub struct Api {
     state: ApiState,
@@ -48,7 +21,7 @@ impl Api {
         // empty
         if args.len() == 0 {
             println!("Please provide an argument. Use -h for available commands");
-            std::process::exit(1);
+            process::exit(1);
         }
 
         // base commands
@@ -70,7 +43,7 @@ impl Api {
 
                 "-h" | "--help" | "help" => {
                     Api::flag_h();
-                    std::process::exit(1);
+                    process::exit(1);
                 }
                 _ => {}
             }
@@ -80,17 +53,16 @@ impl Api {
         // only one base command
         if state_change_counter > 1 {
             println!("Please only use one mode at the time.");
-            std::process::exit(1);
+            process::exit(1);
         }
         args.remove(0);
-        println!("FLAGS: {:?}", args);
 
         match self.state {
-            ApiState::Sw => crate::sw::sw_flags(&mut self.flags, args),
-            ApiState::Cd | ApiState::BgCd => crate::bgcd::bgcd_flags(&mut self.flags, args),
+            ApiState::Sw => sw_flags(&mut self.flags, args),
+            ApiState::Cd | ApiState::BgCd => bgcd_flags(&mut self.flags, args),
             _ => {
-                println!("Failed to fail x2");
-                std::process::exit(1);
+                println!("Failed to fail.");
+                process::exit(1);
             }
         }
     }
@@ -99,13 +71,10 @@ impl Api {
         match self.state {
             ApiState::Init => {
                 println!("Please give a valid argument, use -h for a list of arguments.");
-                std::process::exit(1);
+                process::exit(1);
             }
-            ApiState::Sw => crate::sw::main(self.flags.clone()),
-            ApiState::BgCd => {
-                crate::bgcd::main(self.flags.len, self.flags.name.clone(), self.flags.u_time)
-            }
-
+            ApiState::Sw => sw_main(self.flags.clone()),
+            ApiState::BgCd => bgcd_main(self.flags.len, self.flags.name.clone(), self.flags.u_time),
             ApiState::Cd => {}
         }
     }
