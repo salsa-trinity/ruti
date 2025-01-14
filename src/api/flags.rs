@@ -8,6 +8,8 @@ pub struct ApiFlags {
     pub name_defined: i32,
     pub u_time: f64,
     pub u_time_defined: i32,
+    pub ls_defined: i32,
+    pub cd_command_defined: i32,
 }
 
 impl ApiFlags {
@@ -20,6 +22,8 @@ impl ApiFlags {
             name_defined: 0,
             u_time: 60f64,
             u_time_defined: 0,
+            ls_defined: 0,
+            cd_command_defined: 0,
         }
     }
 }

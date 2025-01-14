@@ -2,10 +2,10 @@ use crate::api::flags::ApiFlags;
 use std::{io, io::Write, process, sync::mpsc, thread, time::Duration, time::Instant};
 use termion::{event::Key, input::TermRead, raw::IntoRawMode};
 
-pub fn sw_main(flags: ApiFlags) {
+pub fn sw_main(flags: &mut ApiFlags) {
     let (tx, rx) = mpsc::channel::<&str>();
     let tx2 = tx.clone();
-    let _stdout = std::io::stdout().into_raw_mode().unwrap();
+    let _stdout = io::stdout().into_raw_mode().unwrap();
     // i don't know why, but changing the name to _ breaks it :(
 
     thread::spawn(move || listener_thread(tx));

@@ -1,25 +1,60 @@
+use crate::api::flags::ApiFlags;
 use directories::ProjectDirs;
-use std::{fs, io::Write, path::Path, process, thread, time::Duration, time::Instant};
+use std::{
+    fs,
+    io::Write,
+    path::Path,
+    process, thread,
+    time::{Duration, Instant},
+};
 
-pub fn bgcd_main(len: f64, mut p_name: String, u_time: f64) {
+pub fn cd_main(flags: &mut ApiFlags) {
+    let data_path = match ProjectDirs::from("com", "github", "ruti") {
+        Some(p) => p.to_owned(),
+        None => {
+            println!("ERROR: failed to get project directory.");
+            process::exit(1);
+        }
+    };
+    let data_path = data_path.data_local_dir();
+    if !fs::exists(data_path).unwrap() {
+        println!("LOG: no data directory found, creating a new one.");
+        fs::create_dir_all(data_path).unwrap();
+    }
+
+    if flags.cd_command_defined > 0 {
+        if flags.ls_defined > 0 {
+            ls_command(&data_path);
+        }
+    } else {
+        cd(&data_path, flags);
+    }
+}
+
+fn cd(data_path: &Path, flags: &mut ApiFlags) {
     let life = Instant::now();
-    let mut target = Duration::from_secs_f64(len);
+    let mut target = Duration::from_secs_f64(flags.len);
 
     // time_update makes it so that every n seconds,
     // you update the file containing the cd data
-    let time_update = Duration::from_secs_f64(u_time);
+    let time_update = Duration::from_secs_f64(flags.u_time);
     let mut loop_time;
 
     // file handling
-    let (pro_path, mut lines) = create_cd_file(len, &mut p_name);
+    let mut lines = create_cd_file(&data_path, flags.len, &mut flags.name);
     let mut name_num = -1;
-    let pn_path = &pro_path.data_dir().join("pn");
-    let cd_path = &pro_path.data_dir().join(process::id().to_string());
-    if p_name.is_empty() {
-        name_num = default_name(&pro_path);
-        p_name = String::from("cd-").to_owned() + &name_num.to_string();
+    let pn_path = &data_path.join("pn");
+    let cd_path = &data_path.join(process::id().to_string());
+    if flags.name.is_empty() {
+        name_num = default_name(data_path);
+        flags.name = String::from("cd-").to_owned() + &name_num.to_string();
     }
-    println!("PID: {}, PN: {}, LEN: {}", process::id(), p_name, len);
+    println!(
+        "PID: {}, LEN: {}, PN: {}",
+        process::id(),
+        flags.name,
+        flags.len
+    );
 
     // sleep for x - n
     let mut total = Duration::from_secs(0);
@@ -62,21 +97,8 @@ pub fn bgcd_main(len: f64, mut p_name: String, u_time: f64) {
     fs::remove_file(cd_path).unwrap();
 }
 
-fn create_cd_file(len: f64, p_name: &mut String) -> (ProjectDirs, Vec<String>) {
-    let path = match ProjectDirs::from("com", "github", "ruti") {
-        Some(p) => p.to_owned(),
-        None => {
-            println!("ERROR: failed to get project directory.");
-            process::exit(1);
-        }
-    };
-    let data_path = path.data_local_dir();
-    if !fs::exists(data_path).unwrap() {
-        println!("LOG: no data directory found, creating a new one.");
-        fs::create_dir_all(data_path).unwrap();
-    }
-
-    let cd_path = data_path.join(process::id().to_string());
+fn create_cd_file(data_path: &Path, len: f64, p_name: &mut String) -> Vec<String> {
+    let cd_path = &data_path.join(process::id().to_string());
     fs::File::create(&cd_path).unwrap();
     fs::OpenOptions::new()
         .append(true)
@@ -91,12 +113,12 @@ fn create_cd_file(len: f64, p_name: &mut String) -> (ProjectDirs, Vec<String>) {
     let file: String = fs::read_to_string(&cd_path).unwrap();
     let lines: Vec<&str> = file.lines().collect();
     let lines: Vec<String> = lines.iter().map(|s| s.to_string()).collect();
-    (path, lines)
+    lines
 }
 
-fn default_name(pro_path: &ProjectDirs) -> i32 {
+fn default_name(pro_path: &Path) -> i32 {
     let name_num;
-    let pn_path = pro_path.data_dir().join("pn");
+    let pn_path = pro_path.join("pn");
     if !fs::exists(&pn_path).unwrap() {
         println!("LOG: creating a new pn file.");
         fs::File::create(&pn_path).unwrap();
@@ -154,5 +176,9 @@ fn delete_pn(pn_path: &Path, name_num: i32) {
         lines += new_lines[new_lines.len() - 1];
     }
     println!("new_new_lines: {}", lines);
-    std::fs::write(&pn_path, lines).unwrap();
+    fs::write(&pn_path, lines).unwrap();
+}
+
+fn ls_command(data_path: &Path) {
+    // TODO:
 }
