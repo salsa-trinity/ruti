@@ -56,7 +56,6 @@ pub fn cd_flags(flags: &mut ApiFlags, args: Vec<String>) {
         }
     }
     // ensure that only one cd command is used at the time
-    // TODO: test it when there are more commands
     // TODO: proposal: make sure that when now using a command, the next argument is the lenght
     flags.cd_command_defined = cd_command_change_counter;
     if cd_command_change_counter > 1 {

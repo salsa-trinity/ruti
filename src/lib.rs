@@ -7,4 +7,5 @@ pub mod cd {
     pub mod cd;
     pub mod flags;
 }
+pub mod bgcd;
 pub mod sw;

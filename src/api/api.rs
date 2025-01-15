@@ -1,6 +1,8 @@
 use crate::{
-    api::flags::ApiFlags, api::state::ApiState, cd::cd::cd_main, cd::flags::cd_flags, sw::sw_flags,
-    sw::sw_main,
+    api::{flags::ApiFlags, state::ApiState},
+    bgcd::bgcd_main,
+    cd::{cd::cd_main, flags::cd_flags},
+    sw::{sw_flags, sw_main},
 };
 use std::process;
 
@@ -32,6 +34,10 @@ impl Api {
                     self.state = ApiState::Sw;
                     state_change_counter += 1;
                 }
+                "_cd" => {
+                    self.state = ApiState::BgCd;
+                    state_change_counter += 1;
+                }
                 "cd" | "countdown" => {
                     self.state = ApiState::Cd;
                     state_change_counter += 1;
@@ -54,8 +60,8 @@ impl Api {
 
         match self.state {
             ApiState::Sw => sw_flags(&mut self.flags, args),
-            ApiState::Cd => cd_flags(&mut self.flags, args),
-            _ => {
+            ApiState::Cd | ApiState::BgCd => cd_flags(&mut self.flags, args),
+            ApiState::Init => {
                 println!("Failed to fail.");
                 process::exit(1);
             }
@@ -70,6 +76,7 @@ impl Api {
             }
             ApiState::Sw => sw_main(&mut self.flags),
             ApiState::Cd => cd_main(&mut self.flags),
+            ApiState::BgCd => bgcd_main(&mut self.flags),
         }
     }
 
