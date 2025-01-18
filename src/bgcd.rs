@@ -1,4 +1,4 @@
-use crate::api::flags::ApiFlags;
+use crate::args::{Args, Cmd};
 use directories::ProjectDirs;
 use std::{
     fs,
@@ -8,7 +8,7 @@ use std::{
     time::{Duration, Instant},
 };
 
-pub fn bgcd_main(flags: &mut ApiFlags) {
+pub fn bgcd_main(args: Args) {
     let data_path = match ProjectDirs::from("com", "github", "ruti") {
         Some(p) => p.to_owned(),
         None => {
@@ -21,33 +21,41 @@ pub fn bgcd_main(flags: &mut ApiFlags) {
         println!("LOG: no data directory found, creating a new one.");
         fs::create_dir_all(data_path).unwrap();
     }
-    bgcd(&data_path, flags);
+    bgcd(&data_path, args);
 }
 
-fn bgcd(data_path: &Path, flags: &mut ApiFlags) {
+fn bgcd(data_path: &Path, args: Args) {
     let life = Instant::now();
-    let mut target = Duration::from_secs_f64(flags.len);
+    // TODO: find a way to make this pretty
+    let len = match args.cmd {
+        Cmd::BgCd { len, .. } => len,
+        _ => 0f64,
+    };
+    let u_time = match args.cmd {
+        Cmd::BgCd { update_time, .. } => update_time.unwrap_or(60f64),
+        _ => 64f64,
+    };
+    let mut name = match args.cmd {
+        Cmd::BgCd { name, .. } => name.clone().unwrap_or("".to_string()),
+        _ => "".to_string(),
+    };
+    let mut target = Duration::from_secs_f64(len);
 
     // time_update makes it so that every n seconds,
     // you update the file containing the cd data
-    let time_update = Duration::from_secs_f64(flags.u_time);
+    let time_update = Duration::from_secs_f64(u_time);
     let mut loop_time;
 
     // file handling
-    let mut lines = create_bgcd_file(&data_path, flags.len, &mut flags.name);
+    let mut lines = create_bgcd_file(&data_path, len, &name);
     let mut name_num = -1;
     let pn_path = &data_path.join("pn");
     let cd_path = &data_path.join(process::id().to_string());
-    if flags.name.is_empty() {
+    if name.is_empty() {
         name_num = default_name(data_path);
-        flags.name = String::from("cd-").to_owned() + &name_num.to_string();
+        name = String::from("cd-").to_owned() + &name_num.to_string();
     }
-    println!(
-        "PID: {}, PN: {}, LEN: {}",
-        process::id(),
-        flags.name,
-        flags.len
-    );
+    println!("PID: {}, PN: {}, LEN: {}", process::id(), name, len);
 
     // sleep for x - n
     let mut total = Duration::from_secs(0);
@@ -90,7 +98,7 @@ fn bgcd(data_path: &Path, flags: &mut ApiFlags) {
     fs::remove_file(cd_path).unwrap();
 }
 
-fn create_bgcd_file(data_path: &Path, len: f64, p_name: &mut String) -> Vec<String> {
+fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
     let cd_path = &data_path.join(process::id().to_string());
     fs::File::create(&cd_path).unwrap();
     fs::OpenOptions::new()
@@ -109,9 +117,9 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &mut String) -> Vec<Stri
     lines
 }
 
-fn default_name(pro_path: &Path) -> i32 {
+fn default_name(data_path: &Path) -> i32 {
     let name_num;
-    let pn_path = pro_path.join("pn");
+    let pn_path = data_path.join("pn");
     if !fs::exists(&pn_path).unwrap() {
         println!("LOG: creating a new pn file.");
         fs::File::create(&pn_path).unwrap();

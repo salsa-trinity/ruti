@@ -1,22 +1,18 @@
-use ruti::api::api::Api;
+use clap::Parser;
+use ruti::{args::Args, args::CdCmd, args::Cmd};
 use std::env;
+
 fn main() {
     env::set_var("RUST_BACKTRACE", "1");
-    let mut args: Vec<String> = env::args().collect();
-    args.remove(0);
 
-    let mut api = Api::new();
-    api.main_flags(args);
-    api.main();
+    let args = Args::parse();
+    match args.cmd {
+        Cmd::BgCd { .. } => ruti::bgcd::bgcd_main(args),
+        Cmd::Sw { .. } => ruti::sw::sw_main(args),
+        Cmd::Cd { cmd, .. } => match cmd {
+            Some(CdCmd::Ls {}) => println!("TODO: cd ls"),
+            Some(CdCmd::Rm {}) => println!("TODO: cd rm"),
+            _ => println!("TODO: cd"),
+        },
+    }
 }
-
-// ruti cd
-// ruti countdown
-// # starts a countdown, which one started, initializes input handling:
-//      - s: start/pause the countdown
-//      - esc: exit and cancel the countdown
-//      - d: detach from the current countdown (it keeps running in the background)
-// ruti cds
-// ruti status
-// # shows the status for all running countdowns
-//
