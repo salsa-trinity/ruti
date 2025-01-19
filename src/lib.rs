@@ -1,5 +1,5 @@
 pub mod cd {
-    pub mod flags;
+    pub mod cd;
 }
 pub mod args;
 pub mod bgcd;

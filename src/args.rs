@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use std::process;
 
 /// A CLI for time utilities.
 #[derive(Parser, Debug)]
@@ -30,7 +31,9 @@ pub enum Cmd {
     },
     /// Start a stopwatch.
     Sw {
-        // TODO: fix ugly print bug
+        // TODO: fix ugly print bug. opions:
+        // - device-query
+        // - crossterm
         //
         /// Lap when pausing
         #[clap(short, long)]
@@ -55,13 +58,43 @@ pub enum Cmd {
 #[derive(Subcommand, Debug)]
 pub enum CdCmd {
     /// List currently running countdowns.
-    Ls {},
+    Ls,
     /// Stop and remove a running countdown.
-    Rm {},
+    Rm,
     /// Clean cache of countdown files.
-    Clean {},
+    Clean,
+    /// Get the status for a specific countdown
+    St,
 }
 
 pub fn tests(args: &Args) {
-    // TODO: ALL
+    match &args.cmd {
+        Cmd::Cd {
+            len,
+            cmd,
+            update_time,
+            ..
+        } => match cmd {
+            // when no subcommand is used
+            None => {
+                // length given
+                if len.is_none() {
+                    println!("Please give a length.");
+                    process::exit(1);
+                }
+                // vaild length
+                else if len.is_some() && len.unwrap() <= 0f64 {
+                    println!("Please give a valid length.");
+                    process::exit(1);
+                }
+                // valid update time
+                else if update_time.is_some() && update_time.unwrap() <= 0f64 {
+                    println!("Please give a valid update time.");
+                    process::exit(1);
+                }
+            }
+            _ => {}
+        },
+        _ => {}
+    }
 }
