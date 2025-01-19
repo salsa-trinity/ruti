@@ -1,6 +1,16 @@
 use crate::args::{Args, Cmd};
-use std::{io, io::Write, process, sync::mpsc, thread, time::Duration, time::Instant};
-use termion::{event::Key, input::TermRead, raw::IntoRawMode};
+use std::{
+    io::{self, Stdout, Write},
+    process,
+    sync::mpsc,
+    thread,
+    time::{Duration, Instant},
+};
+use termion::{
+    event::Key,
+    input::TermRead,
+    raw::{IntoRawMode, RawTerminal},
+};
 
 pub fn sw_main(args: Args) {
     let (tx, rx) = mpsc::channel::<&str>();
@@ -8,17 +18,18 @@ pub fn sw_main(args: Args) {
     let _stdout = io::stdout().into_raw_mode().unwrap();
     // i don't know why, but changing the name to _ breaks it :(
 
-    thread::spawn(move || listener_thread(tx));
+    thread::spawn(move || listener_thread(tx, _stdout));
 
     loop_thread(rx, tx2, args);
 }
 
-fn listener_thread(tx: mpsc::Sender<&str>) {
+fn listener_thread(tx: mpsc::Sender<&str>, _stdout: RawTerminal<Stdout>) {
     let stdin = io::stdin();
     for c in stdin.keys() {
         match c.unwrap() {
             Key::Esc => {
                 tx.send("ESC").unwrap();
+                _stdout.suspend_raw_mode().unwrap();
                 process::exit(1);
             }
             Key::Char(' ') => {

@@ -31,10 +31,6 @@ pub enum Cmd {
     },
     /// Start a stopwatch.
     Sw {
-        // TODO: fix ugly print bug. opions:
-        // - device-query
-        // - crossterm
-        //
         /// Lap when pausing
         #[clap(short, long)]
         pause_lap: bool,

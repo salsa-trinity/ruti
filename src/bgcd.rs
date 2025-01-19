@@ -26,18 +26,17 @@ pub fn bgcd_main(args: Args) {
 
 fn bgcd(data_path: &Path, args: Args) {
     let life = Instant::now();
-    // TODO: find a way to make this pretty
-    let len = match args.cmd {
-        Cmd::BgCd { len, .. } => len,
-        _ => 0f64,
-    };
-    let u_time = match args.cmd {
-        Cmd::BgCd { update_time, .. } => update_time.unwrap_or(60f64),
-        _ => 64f64,
-    };
-    let mut name = match args.cmd {
-        Cmd::BgCd { name, .. } => name.clone().unwrap_or("".to_string()),
-        _ => "".to_string(),
+    let (len, u_time, mut name) = match args.cmd {
+        Cmd::BgCd {
+            len,
+            name,
+            update_time,
+        } => (
+            len,
+            update_time.unwrap_or(60f64),
+            name.clone().unwrap_or("".to_string()),
+        ),
+        _ => (0f64, 60f64, "".to_string()),
     };
     let mut target = Duration::from_secs_f64(len);
 
