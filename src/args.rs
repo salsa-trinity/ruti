@@ -56,7 +56,15 @@ pub enum CdCmd {
     /// List currently running countdowns.
     Ls,
     /// Stop and remove a running countdown.
-    Rm,
+    Rm {
+        /// The name of the cd.
+        #[clap()]
+        p_name: Option<String>,
+
+        /// Instead of specifying a name, specify a PID.
+        #[clap(short, long)]
+        pid: Option<u32>,
+    },
     /// Clean cache of countdown files.
     Clean,
     /// Get the status for a specific countdown.
@@ -98,8 +106,8 @@ pub fn tests(args: &Args) {
                         process::exit(1);
                     }
                 }
-                // st subcommand
-                Some(CdCmd::St { p_name, pid }) => {
+                // st & rm subcommand
+                Some(CdCmd::St { p_name, pid }) | Some(CdCmd::Rm { p_name, pid }) => {
                     // p_name or pid are given
                     if p_name.is_none() && pid.is_none() {
                         println!("Please specify a cd name.");
