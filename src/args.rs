@@ -59,8 +59,16 @@ pub enum CdCmd {
     Rm,
     /// Clean cache of countdown files.
     Clean,
-    /// Get the status for a specific countdown
-    St,
+    /// Get the status for a specific countdown.
+    St {
+        /// The name of the cd.
+        #[clap()]
+        p_name: Option<String>,
+
+        /// Instead of specifying a name, specify a PID.
+        #[clap(short, long)]
+        pid: Option<u32>,
+    },
 }
 
 pub fn tests(args: &Args) {
@@ -70,27 +78,42 @@ pub fn tests(args: &Args) {
             cmd,
             update_time,
             ..
-        } => match cmd {
-            // when no subcommand is used
-            None => {
-                // length given
-                if len.is_none() {
-                    println!("Please give a length.");
-                    process::exit(1);
+        } => {
+            match cmd {
+                // when no subcommand is used
+                None => {
+                    // length given
+                    if len.is_none() {
+                        println!("Please give a length.");
+                        process::exit(1);
+                    }
+                    // vaild length
+                    else if len.is_some() && len.unwrap() <= 0f64 {
+                        println!("Please give a valid length.");
+                        process::exit(1);
+                    }
+                    // valid update time
+                    else if update_time.is_some() && update_time.unwrap() <= 0f64 {
+                        println!("Please give a valid update time.");
+                        process::exit(1);
+                    }
                 }
-                // vaild length
-                else if len.is_some() && len.unwrap() <= 0f64 {
-                    println!("Please give a valid length.");
-                    process::exit(1);
+                // st subcommand
+                Some(CdCmd::St { p_name, pid }) => {
+                    // p_name or pid are given
+                    if p_name.is_none() && pid.is_none() {
+                        println!("Please specify a cd name.");
+                        process::exit(1);
+                    }
+                    // pid and p_name are not given
+                    if p_name.is_some() && pid.is_some() {
+                        println!("Please only specify either cd name or pid, but not both at the same time.");
+                        process::exit(1);
+                    }
                 }
-                // valid update time
-                else if update_time.is_some() && update_time.unwrap() <= 0f64 {
-                    println!("Please give a valid update time.");
-                    process::exit(1);
-                }
+                _ => {}
             }
-            _ => {}
-        },
+        }
         _ => {}
     }
 }

@@ -14,7 +14,7 @@ fn main() {
             Some(CdCmd::Ls) => println!("TODO: cd ls"),
             Some(CdCmd::Rm) => println!("TODO: cd rm"),
             Some(CdCmd::Clean) => println!("TODO: cd clean"),
-            Some(CdCmd::St) => println!("TODO: cd st"),
+            Some(CdCmd::St { .. }) => ruti::cd::st::cd_st_main(args),
             _ => ruti::cd::cd::cd_main(args),
         },
     }
