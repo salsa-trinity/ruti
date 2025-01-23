@@ -45,6 +45,30 @@ fn bgcd(data_path: &Path, args: Args) {
     let time_update = Duration::from_secs_f64(u_time);
     let mut loop_time;
 
+    // verify name isnt already used
+    if !name.is_empty() {
+        for file in fs::read_dir(&data_path).unwrap() {
+            for (i, line) in fs::read_to_string(file.unwrap().path())
+                .unwrap()
+                .lines()
+                .map(|l| l.to_string())
+                .collect::<Vec<String>>()
+                .iter()
+                .enumerate()
+            {
+                match (i, line) {
+                    (2, l) => {
+                        if name == *l {
+                            println!("Name already in use. Try a different one");
+                            process::exit(1);
+                        }
+                    }
+                    _ => {}
+                }
+            }
+        }
+    }
+
     // file handling
     let mut lines = create_bgcd_file(&data_path, len, &name);
     let mut name_num = -1;

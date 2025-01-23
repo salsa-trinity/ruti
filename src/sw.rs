@@ -15,10 +15,9 @@ use termion::{
 pub fn sw_main(args: Args) {
     let (tx, rx) = mpsc::channel::<&str>();
     let tx2 = tx.clone();
-    let _stdout = io::stdout().into_raw_mode().unwrap();
-    // i don't know why, but changing the name to _ breaks it :(
+    let raw_mode_handle = io::stdout().into_raw_mode().unwrap();
 
-    thread::spawn(move || listener_thread(tx, _stdout));
+    thread::spawn(move || listener_thread(tx, raw_mode_handle));
 
     loop_thread(rx, tx2, args);
 }

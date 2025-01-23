@@ -40,7 +40,6 @@ pub fn cd_st_main(args: Args) {
         path = data_path.join(pid.to_string())
     };
 
-    // TODO: check for when creating a cd to make sure that that name is not used by another one
     if !fs::exists(&path).unwrap() {
         println!("Please specify a valid cd.");
         process::exit(1);
