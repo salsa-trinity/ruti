@@ -70,7 +70,6 @@ fn bgcd(data_path: &Path, args: Args) {
     }
 
     // file handling
-    let mut lines = create_bgcd_file(&data_path, len, &name);
     let mut name_num = -1;
     let pn_path = &data_path.join("pn");
     let cd_path = &data_path.join(process::id().to_string());
@@ -78,6 +77,7 @@ fn bgcd(data_path: &Path, args: Args) {
         name_num = default_name(data_path);
         name = String::from("cd-").to_owned() + &name_num.to_string();
     }
+    let mut lines = create_bgcd_file(&data_path, len, &name);
     println!("PID: {}, PN: {}, LEN: {}", process::id(), name, len);
 
     // sleep for x - n
@@ -134,8 +134,8 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
     // - total: (or progress), the amout of time that has currently passed
     // - target: the target time for the cd, cd ends when total reaches target
     // - pn: the human readable name, for not having to type the pid
-    let file: String = fs::read_to_string(&cd_path).unwrap();
-    let lines: Vec<&str> = file.lines().collect();
+    let lines: String = fs::read_to_string(&cd_path).unwrap();
+    let lines: Vec<&str> = lines.lines().collect();
     let lines: Vec<String> = lines.iter().map(|s| s.to_string()).collect();
     lines
 }
