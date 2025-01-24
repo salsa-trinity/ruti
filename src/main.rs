@@ -13,7 +13,7 @@ fn main() {
         Cmd::Cd { ref cmd, .. } => match cmd {
             Some(CdCmd::Ls) => println!("TODO: cd ls"),
             Some(CdCmd::Rm { .. }) => ruti::cd::rm::cd_rm_main(args),
-            Some(CdCmd::Clean) => println!("TODO: cd clean"),
+            Some(CdCmd::Clean) => ruti::cd::clean::cd_clean_main(args),
             Some(CdCmd::St { .. }) => ruti::cd::st::cd_st_main(args),
             _ => ruti::cd::cd::cd_main(args),
         },
