@@ -76,6 +76,10 @@ pub enum CdCmd {
         /// Instead of specifying a name, specify a PID.
         #[clap(short, long)]
         pid: Option<u32>,
+
+        /// Optionally, use the single line format.
+        #[clap(short, long)]
+        single: bool,
     },
 }
 
@@ -107,7 +111,7 @@ pub fn tests(args: &Args) {
                     }
                 }
                 // st & rm subcommand
-                Some(CdCmd::St { p_name, pid }) | Some(CdCmd::Rm { p_name, pid }) => {
+                Some(CdCmd::St { p_name, pid, .. }) | Some(CdCmd::Rm { p_name, pid }) => {
                     // p_name or pid are given
                     if p_name.is_none() && pid.is_none() {
                         println!("Please specify a cd name.");

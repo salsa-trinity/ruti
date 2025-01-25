@@ -3,9 +3,13 @@ use directories::ProjectDirs;
 use std::{fs, path, process};
 
 pub fn cd_st_main(args: Args) {
-    let (p_name, pid) = match args.cmd {
+    let (p_name, pid, single) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {
-            Some(CdCmd::St { p_name, pid }) => (p_name, pid),
+            Some(CdCmd::St {
+                p_name,
+                pid,
+                single,
+            }) => (p_name, pid, single),
             _ => panic!(""),
         },
         _ => panic!(""),
@@ -57,12 +61,21 @@ pub fn cd_st_main(args: Args) {
         }
     }
 
-    println!(
-        r"progress: {}s
+    if !single {
+        println!(
+            r"progress: {}s
 target:   {}s
 left:     {}s",
-        progress.round(),
-        target.round(),
-        left.round()
-    );
+            progress.round(),
+            target.round(),
+            left.round()
+        );
+    } else {
+        println!(
+            "{}s/{}s  ({}s)",
+            progress.round(),
+            target.round(),
+            left.round()
+        );
+    }
 }
