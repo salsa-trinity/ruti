@@ -1,6 +1,7 @@
 pub mod cd {
     pub mod cd;
     pub mod clean;
+    pub mod ls;
     pub mod rm;
     pub mod st;
 }

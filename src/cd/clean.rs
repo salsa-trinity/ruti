@@ -10,6 +10,7 @@ pub fn cd_clean_main(args: Args) {
         let file = file.unwrap();
         count += 1;
         if file.file_name() != "pn" {
+            // TODO: fix runtime crash
             let _ = process::Command::new("kill")
                 .arg("-9")
                 .arg(&file.file_name())
@@ -20,8 +21,8 @@ pub fn cd_clean_main(args: Args) {
         fs::remove_file(file.path()).unwrap();
     }
     match count {
-        0 => println!("Countdowns already cleaned."),
-        1 => println!("Successfully cleaned 1 countdown."),
-        _ => println!("Successfully cleaned {} countdowns.", count),
+        0 => println!("Files already cleaned."),
+        1 => println!("Successfully cleaned 1 file."),
+        _ => println!("Successfully cleaned {} files.", count),
     }
 }
