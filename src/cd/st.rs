@@ -3,19 +3,22 @@ use directories::ProjectDirs;
 use std::{fs, path, process};
 
 pub fn cd_st_main(args: Args) {
-    let (p_name, pid, single) = match args.cmd {
+    let (p_name, pid, single, nameless) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {
             Some(CdCmd::St {
                 p_name,
                 pid,
                 single,
-            }) => (p_name, pid, single),
+                nameless,
+            }) => (p_name, pid, single, nameless),
             _ => panic!(""),
         },
         _ => panic!(""),
     };
     let pro_path = ProjectDirs::from("com", "github", "ruti").unwrap();
     let data_path = pro_path.data_local_dir();
+
+    let uid;
 
     let mut path = path::PathBuf::new();
     if p_name.is_some() {
@@ -39,9 +42,11 @@ pub fn cd_st_main(args: Args) {
                 }
             }
         }
+        uid = p_name;
     } else {
         let pid = pid.unwrap();
-        path = data_path.join(pid.to_string())
+        path = data_path.join(pid.to_string());
+        uid = pid.to_string();
     };
 
     if !fs::exists(&path).unwrap() {
@@ -62,6 +67,9 @@ pub fn cd_st_main(args: Args) {
     }
 
     if !single {
+        if !nameless {
+            println!("'{}' status:", uid);
+        }
         println!(
             r"progress: {}s
 target:   {}s
@@ -71,6 +79,9 @@ left:     {}s",
             left.round()
         );
     } else {
+        if !nameless {
+            print!("{}: ", uid);
+        }
         println!(
             "{}s/{}s  ({}s)",
             progress.round(),

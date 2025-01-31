@@ -80,6 +80,10 @@ pub enum CdCmd {
         /// Optionally, use the single line format.
         #[clap(short, long)]
         single: bool,
+
+        /// Optionally, prevent the name from being displayed
+        #[clap(short, long)]
+        nameless: bool,
     },
 }
 
@@ -112,7 +116,7 @@ pub fn tests(args: &Args) {
                 }
                 // st & rm subcommand
                 Some(CdCmd::St { p_name, pid, .. }) | Some(CdCmd::Rm { p_name, pid }) => {
-                    // p_name or pid are given
+                    // p_name nor pid are given
                     if p_name.is_none() && pid.is_none() {
                         println!("Please specify a cd name.");
                         process::exit(1);

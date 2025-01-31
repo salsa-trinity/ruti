@@ -10,7 +10,6 @@ pub fn cd_clean_main(args: Args) {
         let file = file.unwrap();
         count += 1;
         if file.file_name() != "pn" {
-            // TODO: fix runtime crash
             let _ = process::Command::new("kill")
                 .arg("-9")
                 .arg(&file.file_name())
