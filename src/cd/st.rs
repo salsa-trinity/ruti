@@ -25,7 +25,7 @@ pub fn cd_st_main(args: Args) {
         let p_name = p_name.unwrap();
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
-            if &file.file_name() != "pn" {
+            if &file.file_name() != "dn" {
                 for (i, line) in fs::read_to_string(file.path().clone())
                     .unwrap()
                     .lines()

@@ -71,7 +71,7 @@ fn bgcd(data_path: &Path, args: Args) {
 
     // file handling
     let mut name_num = -1;
-    let pn_path = &data_path.join("pn");
+    let dn_path = &data_path.join("dn");
     let cd_path = &data_path.join(process::id().to_string());
     if name.is_empty() {
         name_num = default_name(data_path);
@@ -116,7 +116,7 @@ fn bgcd(data_path: &Path, args: Args) {
 
     // remove files
     if name_num > -1 {
-        delete_pn(&pn_path, name_num);
+        delete_dn(&dn_path, name_num);
     }
     fs::remove_file(cd_path).unwrap();
 }
@@ -142,17 +142,17 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
 
 fn default_name(data_path: &Path) -> i32 {
     let name_num;
-    let pn_path = data_path.join("pn");
-    if !fs::exists(&pn_path).unwrap() {
-        println!("LOG: creating a new pn file.");
-        fs::File::create(&pn_path).unwrap();
+    let dn_path = data_path.join("dn");
+    if !fs::exists(&dn_path).unwrap() {
+        println!("LOG: creating a new dn file.");
+        fs::File::create(&dn_path).unwrap();
     }
-    let mut lines: Vec<String> = fs::read_to_string(&pn_path)
+    let mut lines: Vec<String> = fs::read_to_string(&dn_path)
         .unwrap()
         .lines()
         .map(|s| s.to_string())
         .collect();
-    let mut file = fs::File::options().append(true).open(&pn_path).unwrap();
+    let mut file = fs::File::options().append(true).open(&dn_path).unwrap();
     if lines.is_empty() {
         println!("INITING");
         file.write_all(b"0").unwrap();
@@ -178,8 +178,8 @@ fn default_name(data_path: &Path) -> i32 {
     name_num
 }
 
-fn delete_pn(pn_path: &Path, name_num: i32) {
-    let lines: Vec<String> = fs::read_to_string(&pn_path)
+fn delete_dn(dn_path: &Path, name_num: i32) {
+    let lines: Vec<String> = fs::read_to_string(&dn_path)
         .unwrap()
         .lines()
         .map(|s| s.to_string())
@@ -200,5 +200,5 @@ fn delete_pn(pn_path: &Path, name_num: i32) {
         lines += new_lines[new_lines.len() - 1];
     }
     println!("new_new_lines: {}", lines);
-    fs::write(&pn_path, lines).unwrap();
+    fs::write(&dn_path, lines).unwrap();
 }

@@ -9,7 +9,7 @@ pub fn cd_ls_main(args: Args) {
     let mut no_file = true;
     for file in fs::read_dir(&data_path).unwrap() {
         let file = file.unwrap();
-        if file.file_name() != "pn" {
+        if file.file_name() != "dn" {
             no_file = false;
             process::Command::new("ruti")
                 .arg("cd")

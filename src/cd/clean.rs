@@ -9,7 +9,7 @@ pub fn cd_clean_main(args: Args) {
     for file in data_dir.read_dir().unwrap() {
         let file = file.unwrap();
         count += 1;
-        if file.file_name() != "pn" {
+        if file.file_name() != "dn" {
             let _ = process::Command::new("kill")
                 .arg("-9")
                 .arg(&file.file_name())

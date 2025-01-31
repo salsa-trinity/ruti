@@ -12,14 +12,14 @@ pub fn cd_rm_main(args: Args) {
     };
     let pro_path = ProjectDirs::from("com", "github", "ruti").unwrap();
     let data_path = pro_path.data_local_dir();
-    // TODO: when rm a cd with a default name, remove it from the pn file
+    // TODO: when rm a cd with a default name, remove it from the dn file
 
     let mut path = path::PathBuf::new();
     if p_name.is_some() {
         let p_name = p_name.clone().unwrap();
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
-            if &file.file_name() != "pn" {
+            if &file.file_name() != "dn" {
                 for (i, line) in fs::read_to_string(file.path().clone())
                     .unwrap()
                     .lines()
