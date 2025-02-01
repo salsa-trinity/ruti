@@ -51,8 +51,7 @@ fn bgcd(data_path: &Path, args: Args) {
             for (i, line) in fs::read_to_string(file.unwrap().path())
                 .unwrap()
                 .lines()
-                .map(|l| l.to_string())
-                .collect::<Vec<String>>()
+                .collect::<Vec<&str>>()
                 .iter()
                 .enumerate()
             {
@@ -134,9 +133,12 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
     // - total: (or progress), the amout of time that has currently passed
     // - target: the target time for the cd, cd ends when total reaches target
     // - pn: the human readable name, for not having to type the pid
-    let lines: String = fs::read_to_string(&cd_path).unwrap();
-    let lines: Vec<&str> = lines.lines().collect();
-    let lines: Vec<String> = lines.iter().map(|s| s.to_string()).collect();
+    // - dn: true/false of wether its name has been assigned by the dn file
+    let lines: Vec<String> = fs::read_to_string(&cd_path)
+        .unwrap()
+        .lines()
+        .map(|s| s.to_string()) // TODO: remove this map when i learn about lifetimes
+        .collect();
     lines
 }
 
@@ -147,11 +149,12 @@ fn default_name(data_path: &Path) -> i32 {
         println!("LOG: creating a new dn file.");
         fs::File::create(&dn_path).unwrap();
     }
-    let mut lines: Vec<String> = fs::read_to_string(&dn_path)
-        .unwrap()
-        .lines()
-        .map(|s| s.to_string())
-        .collect();
+    //let mut lines: Vec<&str> = fs::read_to_string(&dn_path)
+    //    .unwrap()
+    //    .lines()
+    //    .collect();
+    let lines = fs::read_to_string(&dn_path).unwrap();
+    let mut lines: Vec<&str> = lines.lines().collect();
     let mut file = fs::File::options().append(true).open(&dn_path).unwrap();
     if lines.is_empty() {
         println!("INITING");
@@ -172,33 +175,25 @@ fn default_name(data_path: &Path) -> i32 {
         } else {
             name_num = lines.last().unwrap().parse::<i32>().unwrap() + 1;
         }
-        lines.push("\n".to_string() + &name_num.to_string());
+        let name_num_str = "\n".to_owned() + &name_num.to_string();
+        lines.push(&name_num_str);
         file.write_all(lines.last().unwrap().as_bytes()).unwrap();
     }
     name_num
 }
 
 fn delete_dn(dn_path: &Path, name_num: i32) {
-    let lines: Vec<String> = fs::read_to_string(&dn_path)
-        .unwrap()
-        .lines()
-        .map(|s| s.to_string())
-        .collect();
+    let lines: &str = &fs::read_to_string(&dn_path).unwrap();
+    let lines: Vec<&str> = lines.lines().collect();
     println!("lines: {:?}", lines);
-    let mut new_lines = Vec::new();
+    let mut new_lines: Vec<&str> = Vec::new();
     for line in &lines {
         if line.parse::<i32>().unwrap() != name_num {
             new_lines.push(line);
         }
     }
     println!("new_lines: {:?}", new_lines);
-    let mut lines = String::new();
-    if new_lines.len() > 0 {
-        for i in 0..new_lines.len() - 1 {
-            lines += &(new_lines[i].to_owned() + "\n");
-        }
-        lines += new_lines[new_lines.len() - 1];
-    }
+    let lines = new_lines.join("\n");
     println!("new_new_lines: {}", lines);
     fs::write(&dn_path, lines).unwrap();
 }
