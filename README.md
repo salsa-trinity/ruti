@@ -4,10 +4,10 @@
 
 ## Table of Contents
 
-- [Why us](why-us)
+- [Why us](#why-us)
 - [Install guide](#install-guide)
-- [License](license)
-- [Contributing](contributing)
+- [License](#license)
+- [Contributing](#contributing)
 
 ## Why us
 
@@ -23,6 +23,10 @@ Some of the benefits of using ruti are:
 2. Cd into the directory.
 3. Run: `cargo build --release`, to compile.
 4. Add to path with: `mv target/release/ruti ~/.cargo/bin/ruti`
+
+## License
+
+This project is under [The MIT License](https://mit-license.org/)
 
 ## Contributing
 
