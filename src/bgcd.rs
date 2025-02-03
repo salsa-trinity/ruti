@@ -9,6 +9,7 @@ use std::{
 };
 
 pub fn bgcd_main(args: Args) {
+    // TODO: make a struct that makes it easy to get specific info of each countdown
     let data_path = match ProjectDirs::from("com", "github", "ruti") {
         Some(p) => p.to_owned(),
         None => {
@@ -130,10 +131,10 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
         .write_all(("0\n".to_owned() + &len.to_string() + "\n" + &p_name).as_bytes())
         .unwrap();
     // NOTE: file format. the file name is the pid
-    // - total: (or progress), the amout of time that has currently passed
-    // - target: the target time for the cd, cd ends when total reaches target
-    // - pn: the human readable name, for not having to type the pid
-    // - dn: true/false of wether its name has been assigned by the dn file
+    // 0 - total: (or progress), the amout of time that has currently passed
+    // 1 - target: the target time for the cd, cd ends when total reaches target
+    // 2 - pn: the human readable name, for not having to type the pid
+    // 3 - dn: true/false of wether its name has been assigned by the dn file
     let lines: Vec<String> = fs::read_to_string(&cd_path)
         .unwrap()
         .lines()
@@ -149,10 +150,6 @@ fn default_name(data_path: &Path) -> i32 {
         println!("LOG: creating a new dn file.");
         fs::File::create(&dn_path).unwrap();
     }
-    //let mut lines: Vec<&str> = fs::read_to_string(&dn_path)
-    //    .unwrap()
-    //    .lines()
-    //    .collect();
     let lines = fs::read_to_string(&dn_path).unwrap();
     let mut lines: Vec<&str> = lines.lines().collect();
     let mut file = fs::File::options().append(true).open(&dn_path).unwrap();

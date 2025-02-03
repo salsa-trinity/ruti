@@ -19,7 +19,7 @@ pub fn cd_rm_main(args: Args) {
         let p_name = p_name.clone().unwrap();
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
-            if &file.file_name() != "dn" {
+            if file.file_name() != "dn" {
                 for (i, line) in fs::read_to_string(file.path().clone())
                     .unwrap()
                     .lines()
@@ -27,7 +27,7 @@ pub fn cd_rm_main(args: Args) {
                 {
                     match (i, line) {
                         (2, l) => {
-                            if *l == p_name {
+                            if l == p_name {
                                 path = file.path();
                                 pid = Some(
                                     file.file_name()

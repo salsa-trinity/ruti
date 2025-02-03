@@ -11,9 +11,9 @@ fn main() {
         Cmd::BgCd { .. } => ruti::bgcd::bgcd_main(args),
         Cmd::Sw { .. } => ruti::sw::sw_main(args),
         Cmd::Cd { ref cmd, .. } => match cmd {
-            Some(CdCmd::Ls) => ruti::cd::ls::cd_ls_main(args),
+            Some(CdCmd::Ls) => ruti::cd::ls::cd_ls_main(),
             Some(CdCmd::Rm { .. }) => ruti::cd::rm::cd_rm_main(args),
-            Some(CdCmd::Clean) => ruti::cd::clean::cd_clean_main(args),
+            Some(CdCmd::Clean) => ruti::cd::clean::cd_clean_main(),
             Some(CdCmd::St { .. }) => ruti::cd::st::cd_st_main(args),
             _ => ruti::cd::cd::cd_main(args),
         },

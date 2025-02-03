@@ -24,7 +24,7 @@ pub fn cd_main(args: Args) {
         _ => {}
     }
     let len = _len;
-    let bgcd_pid = Command::new("ruti")
+    Command::new("ruti")
         .arg("bg-cd")
         .arg(len.to_string())
         .args(bgcd_args)

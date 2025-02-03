@@ -1,8 +1,7 @@
-use crate::args::Args;
 use directories::ProjectDirs;
 use std::{fs, process};
 
-pub fn cd_ls_main(args: Args) {
+pub fn cd_ls_main() {
     let data_path = ProjectDirs::from("com", "github", "ruti").unwrap();
     let data_path = data_path.data_local_dir();
     let mut no_file = true;
