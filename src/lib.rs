@@ -7,4 +7,5 @@ pub mod cd {
 }
 pub mod args;
 pub mod bgcd;
+pub mod cd_iface;
 pub mod sw;
