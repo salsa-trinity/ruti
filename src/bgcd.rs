@@ -9,7 +9,6 @@ use std::{
 };
 
 pub fn bgcd_main(args: Args) {
-    // TODO: make a struct that makes it easy to get specific info of each countdown
     let data_path = match ProjectDirs::from("com", "github", "ruti") {
         Some(p) => p.to_owned(),
         None => {

@@ -1,6 +1,5 @@
-use std::{fs, path::Path};
-
 use directories::ProjectDirs;
+use std::{fs, path::Path};
 
 pub struct CdIface {
     pub total: f64,
