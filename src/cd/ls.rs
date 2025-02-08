@@ -1,8 +1,9 @@
-use directories::ProjectDirs;
 use std::{fs, process};
 
+use super::iface::CdIface;
+
 pub fn cd_ls_main() {
-    let data_path = ProjectDirs::from("com", "github", "ruti").unwrap();
+    let data_path = CdIface::get_data_path();
     let data_path = data_path.data_local_dir();
     let mut no_file = true;
     for file in fs::read_dir(&data_path).unwrap() {

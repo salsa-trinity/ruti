@@ -1,5 +1,7 @@
-use crate::args::{Args, CdCmd, Cmd};
-use directories::ProjectDirs;
+use crate::{
+    args::{Args, CdCmd, Cmd},
+    cd::iface::CdIface,
+};
 use std::{fs, path, process};
 
 pub fn cd_st_main(args: Args) {
@@ -15,8 +17,8 @@ pub fn cd_st_main(args: Args) {
         },
         _ => panic!(""),
     };
-    let pro_path = ProjectDirs::from("com", "github", "ruti").unwrap();
-    let data_path = pro_path.data_local_dir();
+    let data_path = CdIface::get_data_path();
+    let data_path = data_path.data_local_dir();
 
     let uid;
 

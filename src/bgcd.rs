@@ -1,5 +1,7 @@
-use crate::args::{Args, Cmd};
-use directories::ProjectDirs;
+use crate::{
+    args::{Args, Cmd},
+    cd::iface::CdIface,
+};
 use std::{
     fs,
     io::Write,
@@ -9,13 +11,7 @@ use std::{
 };
 
 pub fn bgcd_main(args: Args) {
-    let data_path = match ProjectDirs::from("com", "github", "ruti") {
-        Some(p) => p.to_owned(),
-        None => {
-            println!("ERROR: failed to get project directory.");
-            process::exit(1);
-        }
-    };
+    let data_path = CdIface::get_data_path();
     let data_path = data_path.data_local_dir();
     if !fs::exists(data_path).unwrap() {
         println!("LOG: no data directory found, creating a new one.");

@@ -1,6 +1,7 @@
 use crate::{args::Args, args::CdCmd, args::Cmd};
-use directories::ProjectDirs;
 use std::{fs, os::unix::process::CommandExt, path, process};
+
+use super::iface::CdIface;
 
 pub fn cd_rm_main(args: Args) {
     let (p_name, mut pid) = match args.cmd {
@@ -10,8 +11,8 @@ pub fn cd_rm_main(args: Args) {
         },
         _ => panic!(""),
     };
-    let pro_path = ProjectDirs::from("com", "github", "ruti").unwrap();
-    let data_path = pro_path.data_local_dir();
+    let data_path = CdIface::get_data_path();
+    let data_path = data_path.data_local_dir();
     // TODO: when rm a cd with a default name, remove it from the dn file
 
     let mut path = path::PathBuf::new();
