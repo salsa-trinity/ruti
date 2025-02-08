@@ -1,5 +1,8 @@
 use directories::ProjectDirs;
-use std::{fs, path::Path};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
 pub struct CdIface {
     pub total: f64,
@@ -51,15 +54,13 @@ impl CdIface {
     }
 
     pub fn from_pid(pid: u32) -> Option<CdIface> {
-        let data_path = ProjectDirs::from("com", "github", "ruti").unwrap();
-        let data_path = data_path.data_local_dir();
+        let data_path = CdIface::get_data_path();
 
         CdIface::from_path(&data_path.join(pid.to_string()))
     }
 
     pub fn from_pn(pn: &str) -> Option<CdIface> {
-        let data_path = ProjectDirs::from("com", "github", "ruti").unwrap();
-        let data_path = data_path.data_local_dir();
+        let data_path = CdIface::get_data_path();
 
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
@@ -72,5 +73,10 @@ impl CdIface {
         }
 
         None
+    }
+
+    pub fn get_data_path() -> PathBuf {
+        let path = ProjectDirs::from("com", "github", "ruti").unwrap();
+        path.data_local_dir().to_path_buf()
     }
 }
