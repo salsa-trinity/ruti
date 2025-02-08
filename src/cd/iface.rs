@@ -1,5 +1,5 @@
 use directories::ProjectDirs;
-use std::{fs, path::Path};
+use std::{fs, path::Path, process};
 
 pub struct CdIface {
     pub total: f64,
@@ -75,6 +75,12 @@ impl CdIface {
     }
 
     pub fn get_data_path() -> ProjectDirs {
-        ProjectDirs::from("com", "github", "ruti").unwrap()
+        match ProjectDirs::from("com", "github", "ruti") {
+            Some(p) => return p,
+            None => {
+                println!("Failed to get project direcory.");
+                process::exit(1);
+            }
+        }
     }
 }
