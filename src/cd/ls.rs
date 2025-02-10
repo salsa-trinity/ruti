@@ -9,12 +9,7 @@ pub fn cd_ls_main() {
     for file in fs::read_dir(&data_path).unwrap() {
         let file = file.unwrap();
         if file.file_name() != "dn" {
-            for (i, line) in fs::read_to_string(file.path()).unwrap().lines().enumerate() {
-                match (i, line) {
-                    (2, l) => print!("{}: ", l),
-                    _ => {}
-                }
-            }
+            print!("{}: ", CdIface::from_path(&file.path()).unwrap().pn);
             no_file = false;
             // TODO: make it print in a grid-like format
             print!(

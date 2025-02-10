@@ -28,19 +28,8 @@ pub fn cd_st_main(args: Args) {
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
             if &file.file_name() != "dn" {
-                for (i, line) in fs::read_to_string(file.path().clone())
-                    .unwrap()
-                    .lines()
-                    .enumerate()
-                {
-                    match (i, line) {
-                        (2, l) => {
-                            if *l == p_name {
-                                path = file.path();
-                            }
-                        }
-                        _ => {}
-                    }
+                if CdIface::from_path(&file.path()).unwrap().pn == p_name {
+                    path = file.path();
                 }
             }
         }
@@ -55,18 +44,9 @@ pub fn cd_st_main(args: Args) {
         println!("Please specify a valid cd.");
         process::exit(1);
     }
-    let buff = fs::read_to_string(&path).unwrap();
-    let (mut progress, mut target, mut left) = (0f64, 0f64, 0f64);
-    for (i, line) in buff.lines().enumerate() {
-        match (i, line) {
-            (0, l) => progress = l.parse().unwrap(),
-            (1, l) => {
-                target = l.parse().unwrap();
-                left = target - progress;
-            }
-            _ => {}
-        }
-    }
+    let progress = CdIface::from_path(&path).unwrap().total;
+    let target = CdIface::from_path(&path).unwrap().target;
+    let left = target - progress;
 
     if !single {
         if !nameless {

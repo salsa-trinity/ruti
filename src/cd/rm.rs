@@ -21,26 +21,15 @@ pub fn cd_rm_main(args: Args) {
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
             if file.file_name() != "dn" {
-                for (i, line) in fs::read_to_string(file.path().clone())
-                    .unwrap()
-                    .lines()
-                    .enumerate()
-                {
-                    match (i, line) {
-                        (2, l) => {
-                            if l == p_name {
-                                path = file.path();
-                                pid = Some(
-                                    file.file_name()
-                                        .into_string()
-                                        .unwrap()
-                                        .parse::<i32>()
-                                        .unwrap() as u32,
-                                );
-                            }
-                        }
-                        _ => {}
-                    }
+                if CdIface::from_path(&file.path()).unwrap().pn == p_name {
+                    path = file.path();
+                    pid = Some(
+                        file.file_name()
+                            .into_string()
+                            .unwrap()
+                            .parse::<u32>()
+                            .unwrap(),
+                    );
                 }
             }
         }
