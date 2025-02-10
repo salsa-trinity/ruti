@@ -1,6 +1,11 @@
 use directories::ProjectDirs;
 use std::{fs, path::Path, process};
 
+// file format: filename is the pid
+// 0 - total: (or progress), the amout of time that has currently passed
+// 1 - target: the target time for the cd, cd ends when total reaches target
+// 2 - pn: the human readable name, for not having to type the pid
+// 3 - dn: true/false of wether its name has been assigned by the dn file
 pub struct CdIface {
     pub total: f64,
     pub target: f64,
@@ -9,6 +14,7 @@ pub struct CdIface {
     pub pid: u32,
 }
 
+// TODO: make a way to save to a new file
 impl CdIface {
     pub fn from_path(path: &Path) -> Option<CdIface> {
         let (mut total, mut target, mut pn, mut dn) = (0f64, 0f64, "", false);

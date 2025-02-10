@@ -112,11 +112,6 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
         .expect("ERROR: failed to create cd file.")
         .write_all(("0\n".to_owned() + &len.to_string() + "\n" + &p_name).as_bytes())
         .unwrap();
-    // NOTE: file format. the file name is the pid
-    // 0 - total: (or progress), the amout of time that has currently passed
-    // 1 - target: the target time for the cd, cd ends when total reaches target
-    // 2 - pn: the human readable name, for not having to type the pid
-    // 3 - dn: true/false of wether its name has been assigned by the dn file
     let lines: Vec<String> = fs::read_to_string(&cd_path)
         .unwrap()
         .lines()
