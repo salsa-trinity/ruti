@@ -1,6 +1,5 @@
+use crate::cd::iface::CdIface;
 use std::{fs, process};
-
-use super::iface::CdIface;
 
 pub fn cd_ls_main() {
     let data_path = CdIface::get_data_path();
