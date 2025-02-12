@@ -30,12 +30,8 @@ impl CdIface {
                 (0, l) => total = l.parse().unwrap(),
                 (1, l) => target = l.parse().unwrap(),
                 (2, l) => pn = l,
-                (3, l) => {
-                    dn = match l {
-                        &"true" => true,
-                        _ => false,
-                    }
-                }
+                (3, l) => dn = matches!(l, &"true"),
+
                 _ => {}
             }
         }
@@ -87,6 +83,6 @@ impl CdIface {
                 println!("Failed to get project direcory.");
                 process::exit(1);
             }
-        }
+        };
     }
 }
