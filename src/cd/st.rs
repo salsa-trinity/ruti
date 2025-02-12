@@ -4,6 +4,7 @@ use crate::{
 };
 use std::{fs, path, process};
 
+// TODO: make this nicer with the cd iface
 pub fn cd_st_main(args: Args) {
     let (p_name, pid, single, nameless) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {

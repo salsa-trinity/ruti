@@ -115,7 +115,7 @@ fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
     let lines: Vec<String> = fs::read_to_string(&cd_path)
         .unwrap()
         .lines()
-        .map(|s| s.to_string()) // TODO: remove this map when i learn about lifetimes
+        .map(|s| s.to_string())
         .collect();
     lines
 }
