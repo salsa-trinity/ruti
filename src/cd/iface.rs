@@ -7,15 +7,31 @@ use std::{fs, path::Path, process};
 // 2 - pn: the human readable name, for not having to type the pid
 // 3 - dn: true/false of wether its name has been assigned by the dn file
 pub struct CdIface {
+    // NOTE: update here 0
     pub total: f64,
     pub target: f64,
     pub pn: String,
     pub dn: bool,
+
     pub pid: u32,
 }
 
-// TODO: make a way to save to a new file
 impl CdIface {
+    // TODO: add a get_path function
+    pub fn save(&self) {
+        // NOTE: update here 1
+        let out = self.total.to_string()
+            + "\n"
+            + &self.target.to_string()
+            + "\n"
+            + &self.pn.to_string()
+            + "\n"
+            + &self.dn.to_string();
+
+        let path = ProjectDirs::from("com", "github", "ruti").unwrap();
+        let path = path.data_local_dir().join(self.pid.to_string());
+        fs::write(path, out).unwrap();
+    }
     pub fn from_path(path: &Path) -> Option<CdIface> {
         let (mut total, mut target, mut pn, mut dn) = (0f64, 0f64, "", false);
 
@@ -27,6 +43,7 @@ impl CdIface {
         let lines: Vec<&str> = lines.lines().collect();
         for (i, line) in lines.iter().enumerate() {
             match (i, line) {
+                // NOTE: update here 2
                 (0, l) => total = l.parse().unwrap(),
                 (1, l) => target = l.parse().unwrap(),
                 (2, l) => pn = l,

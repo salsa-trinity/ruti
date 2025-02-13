@@ -1,5 +1,5 @@
 use clap::Parser;
-use ruti::{args, args::Args, args::CdCmd, args::Cmd};
+use ruti::args::{self, Args, CdCmd, Cmd};
 use std::env;
 
 fn main() {
