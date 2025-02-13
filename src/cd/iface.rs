@@ -1,5 +1,9 @@
 use directories::ProjectDirs;
-use std::{fs, path::Path, process};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+    process,
+};
 
 // file format: filename is the pid
 // 0 - total: (or progress), the amout of time that has currently passed
@@ -17,7 +21,11 @@ pub struct CdIface {
 }
 
 impl CdIface {
-    // TODO: add a get_path function
+    pub fn get_path(&self) -> PathBuf {
+        let path = ProjectDirs::from("com", "github", "ruti").unwrap();
+        path.data_local_dir().join(self.pid.to_string())
+    }
+
     pub fn save(&self) {
         // NOTE: update here 1
         let out = self.total.to_string()
@@ -32,6 +40,7 @@ impl CdIface {
         let path = path.data_local_dir().join(self.pid.to_string());
         fs::write(path, out).unwrap();
     }
+
     pub fn from_path(path: &Path) -> Option<CdIface> {
         let (mut total, mut target, mut pn, mut dn) = (0f64, 0f64, "", false);
 
