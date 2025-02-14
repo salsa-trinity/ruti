@@ -59,7 +59,9 @@ fn bgcd(data_path: &Path, args: Args) {
         name_num = default_name(data_path);
         name = String::from("cd-").to_owned() + &name_num.to_string();
     }
+    // TODO: make the create_bgcd_file nicer with the iface
     let mut lines = create_bgcd_file(&data_path, len, &name);
+    let mut iface = CdIface::from_pid(process::id()).unwrap();
     println!("PID: {}, PN: {}, LEN: {}", process::id(), name, len);
 
     // sleep for x - n
@@ -74,9 +76,9 @@ fn bgcd(data_path: &Path, args: Args) {
 
             thread::sleep(time_update);
 
-            // TODO: replace this with the cd iface save function
-            lines[0] = (total + time_update).as_secs_f64().to_string();
-            fs::write(&cd_path, lines.join("\n")).unwrap();
+            iface.total = (total + time_update).as_secs_f64();
+            iface.save();
+
             println!("LOG: updated");
             total += loop_time.elapsed();
         }
