@@ -59,9 +59,10 @@ fn bgcd(data_path: &Path, args: Args) {
         name_num = default_name(data_path);
         name = String::from("cd-").to_owned() + &name_num.to_string();
     }
-    // TODO: make the create_bgcd_file nicer with the iface
-    let mut lines = create_bgcd_file(&data_path, len, &name);
-    let mut iface = CdIface::from_pid(process::id()).unwrap();
+
+    fs::File::create(&cd_path).unwrap();
+    let mut iface = CdIface::from_path(&cd_path).unwrap();
+    iface.target = len;
     println!("PID: {}, PN: {}, LEN: {}", process::id(), name, len);
 
     // sleep for x - n
@@ -104,23 +105,6 @@ fn bgcd(data_path: &Path, args: Args) {
         delete_dn(&dn_path, name_num);
     }
     fs::remove_file(cd_path).unwrap();
-}
-
-fn create_bgcd_file(data_path: &Path, len: f64, p_name: &str) -> Vec<String> {
-    let cd_path = &data_path.join(process::id().to_string());
-    fs::File::create(&cd_path).unwrap();
-    fs::OpenOptions::new()
-        .append(true)
-        .open(&cd_path)
-        .expect("ERROR: failed to create cd file.")
-        .write_all(("0\n".to_owned() + &len.to_string() + "\n" + &p_name).as_bytes())
-        .unwrap();
-    let lines: Vec<String> = fs::read_to_string(&cd_path)
-        .unwrap()
-        .lines()
-        .map(|s| s.to_string())
-        .collect();
-    lines
 }
 
 fn default_name(data_path: &Path) -> i32 {
