@@ -4,7 +4,6 @@ use crate::{
 };
 use std::{fs, path, process};
 
-// TODO: make this nicer with the cd iface
 pub fn cd_st_main(args: Args) {
     let (p_name, pid, single, nameless) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {
@@ -45,9 +44,10 @@ pub fn cd_st_main(args: Args) {
         println!("Please specify a valid cd.");
         process::exit(1);
     }
-    let progress = CdIface::from_path(&path).unwrap().total;
-    let target = CdIface::from_path(&path).unwrap().target;
-    let left = target - progress;
+    let iface = CdIface::from_path(&path).unwrap();
+    let total = iface.total;
+    let target = iface.target;
+    let left = target - total;
 
     if !single {
         if !nameless {
@@ -57,7 +57,7 @@ pub fn cd_st_main(args: Args) {
             r"progress: {}s
 target:   {}s
 left:     {}s",
-            progress.round(),
+            total.round(),
             target.round(),
             left.round()
         );
@@ -67,7 +67,7 @@ left:     {}s",
         }
         println!(
             "{}s/{}s  ({}s)",
-            progress.round(),
+            total.round(),
             target.round(),
             left.round()
         );
