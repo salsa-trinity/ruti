@@ -55,15 +55,18 @@ fn bgcd(data_path: &Path, args: Args) {
     let mut name_num = -1;
     let dn_path = &data_path.join("dn");
     let cd_path = &data_path.join(process::id().to_string());
+    let mut dn = false;
     if name.is_empty() {
         name_num = default_name(data_path);
         name = String::from("cd-").to_owned() + &name_num.to_string();
+        dn = true;
     }
 
     fs::File::create(&cd_path).unwrap();
     let mut iface = CdIface::from_path(&cd_path).unwrap();
     iface.target = len;
-    println!("PID: {}, PN: {}, LEN: {}", process::id(), name, len);
+    iface.pn = name;
+    iface.dn = dn;
 
     // sleep for x - n
     let mut total = Duration::from_secs(0);
