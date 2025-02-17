@@ -20,19 +20,27 @@ pub fn bgcd_main(args: Args) {
     bgcd(&data_path, args);
 }
 
+fn log(text: &str, verbose: bool) {
+    if verbose {
+        println!("{text}");
+    }
+}
+
 fn bgcd(data_path: &Path, args: Args) {
     let life = Instant::now();
-    let (len, u_time, mut name) = match args.cmd {
+    let (len, u_time, mut pn, verbose) = match args.cmd {
         Cmd::BgCd {
             len,
             name,
             update_time,
+            verbose,
         } => (
             len,
             update_time.unwrap_or(60f64),
             name.clone().unwrap_or("".to_string()),
+            verbose,
         ),
-        _ => (0f64, 60f64, "".to_string()),
+        _ => (0f64, 60f64, "".to_string(), false),
     };
     let mut target = Duration::from_secs_f64(len);
 
@@ -42,10 +50,10 @@ fn bgcd(data_path: &Path, args: Args) {
     let mut loop_time;
 
     // verify pn isnt already used
-    if !name.is_empty() {
+    if !pn.is_empty() {
         for file in fs::read_dir(&data_path).unwrap() {
-            if name == CdIface::from_path(&file.unwrap().path()).unwrap().pn {
-                println!("Name already in use. Try a different one");
+            if pn == CdIface::from_path(&file.unwrap().path()).unwrap().pn {
+                log("Name already in use. Try a different one", verbose);
                 process::exit(1);
             }
         }
@@ -56,16 +64,16 @@ fn bgcd(data_path: &Path, args: Args) {
     let dn_path = &data_path.join("dn");
     let cd_path = &data_path.join(process::id().to_string());
     let mut dn = false;
-    if name.is_empty() {
-        name_num = default_name(data_path);
-        name = String::from("cd-").to_owned() + &name_num.to_string();
+    if pn.is_empty() {
+        name_num = default_name(data_path, verbose);
+        pn = String::from("cd-").to_owned() + &name_num.to_string();
         dn = true;
     }
 
     fs::File::create(&cd_path).unwrap();
     let mut iface = CdIface::from_path(&cd_path).unwrap();
     iface.target = len;
-    iface.pn = name;
+    iface.pn = pn;
     iface.dn = dn;
 
     // sleep for x - n
@@ -83,7 +91,7 @@ fn bgcd(data_path: &Path, args: Args) {
             iface.total = (total + time_update).as_secs_f64();
             iface.save();
 
-            println!("LOG: updated");
+            log("LOG: updated", verbose);
             total += loop_time.elapsed();
         }
     }
@@ -97,11 +105,12 @@ fn bgcd(data_path: &Path, args: Args) {
         total += loop_time.elapsed();
     }
     // TODO: notification code
-    println!(
-        "total: {}, lifespan: {}",
-        total.as_secs_f64(),
-        life.elapsed().as_secs_f64()
-    );
+
+    //println!(
+    //    "total: {}, lifespan: {}",
+    //    total.as_secs_f64(),
+    //    life.elapsed().as_secs_f64()
+    //);
 
     // remove files
     if name_num > -1 {
@@ -110,22 +119,22 @@ fn bgcd(data_path: &Path, args: Args) {
     fs::remove_file(cd_path).unwrap();
 }
 
-fn default_name(data_path: &Path) -> i32 {
+fn default_name(data_path: &Path, verbose: bool) -> i32 {
     let name_num;
     let dn_path = data_path.join("dn");
     if !fs::exists(&dn_path).unwrap() {
-        println!("LOG: creating a new dn file.");
+        log("LOG: creating a new dn file.", verbose);
         fs::File::create(&dn_path).unwrap();
     }
     let lines = fs::read_to_string(&dn_path).unwrap();
     let mut lines: Vec<&str> = lines.lines().collect();
     let mut file = fs::File::options().append(true).open(&dn_path).unwrap();
     if lines.is_empty() {
-        println!("INITING");
+        log("INITING", verbose);
         file.write_all(b"0").unwrap();
         name_num = 0;
     } else {
-        println!("ADDING");
+        log("ADDING", verbose);
         let nums: Vec<i32> = lines.iter().map(|l| l.parse::<i32>().unwrap()).collect();
         if nums.len() > 0 {
             let mut i: i32 = 0;
@@ -149,15 +158,15 @@ fn default_name(data_path: &Path) -> i32 {
 fn delete_dn(dn_path: &Path, name_num: i32) {
     let lines: &str = &fs::read_to_string(&dn_path).unwrap();
     let lines: Vec<&str> = lines.lines().collect();
-    println!("lines: {:?}", lines);
+    //println!("lines: {:?}", lines);
     let mut new_lines: Vec<&str> = Vec::new();
     for line in &lines {
         if line.parse::<i32>().unwrap() != name_num {
             new_lines.push(line);
         }
     }
-    println!("new_lines: {:?}", new_lines);
+    //println!("new_lines: {:?}", new_lines);
     let lines = new_lines.join("\n");
-    println!("new_new_lines: {}", lines);
+    //println!("new_new_lines: {}", lines);
     fs::write(&dn_path, lines).unwrap();
 }

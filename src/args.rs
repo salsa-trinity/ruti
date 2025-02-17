@@ -48,6 +48,10 @@ pub enum Cmd {
         /// Optionally specify the interval in seconds to update the countdown's file.
         #[clap(short, long)]
         update_time: Option<f64>,
+
+        /// Enable verbose logging
+        #[clap(short, long)]
+        verbose: bool,
     },
 }
 

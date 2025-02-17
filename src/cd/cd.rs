@@ -1,5 +1,5 @@
-use crate::{args::Args, args::Cmd};
-use std::{os::unix::process::CommandExt, process::Command};
+use crate::args::{Args, Cmd};
+use std::process::Command;
 
 pub fn cd_main(args: Args) {
     let mut bgcd_args = Vec::new();
@@ -28,12 +28,6 @@ pub fn cd_main(args: Args) {
         .arg("bg-cd")
         .arg(len.to_string())
         .args(bgcd_args)
-        .exec();
-    //.spawn()
-    //.unwrap()
-    //.id();
-    //println!("pid: {}", bgcd_pid);
-
-    // TODO: make this nice, missing:
-    // - status command
+        .spawn()
+        .unwrap();
 }
