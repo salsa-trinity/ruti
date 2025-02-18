@@ -47,6 +47,7 @@ fn loop_thread(rx: mpsc::Receiver<&str>, tx: mpsc::Sender<&str>, args: Args) {
     let mut is_running = true;
     let mut lap_count = 0;
 
+    // parse -pl
     let pl = match args.cmd {
         Cmd::Sw { pause_lap } => pause_lap,
         _ => false,

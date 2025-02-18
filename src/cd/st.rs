@@ -4,7 +4,6 @@ use crate::{
 };
 use std::{fs, path, process};
 
-// TODO: make it print in a tabular format
 pub fn cd_st_main(args: Args) {
     let (p_name, pid, single, nameless) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {

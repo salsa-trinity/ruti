@@ -4,6 +4,7 @@ use std::{fs, process};
 pub fn cd_clean_main() {
     let data_dir = ProjectDirs::from("com", "github", "ruti").unwrap();
     let data_dir = data_dir.data_local_dir();
+
     let mut count = 0;
     for file in data_dir.read_dir().unwrap() {
         let file = file.unwrap();

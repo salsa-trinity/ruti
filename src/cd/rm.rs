@@ -1,7 +1,5 @@
-use crate::{args::Args, args::CdCmd, args::Cmd};
+use crate::{args::Args, args::CdCmd, args::Cmd, cd::iface::CdIface};
 use std::{fs, os::unix::process::CommandExt, path, process};
-
-use super::iface::CdIface;
 
 pub fn cd_rm_main(args: Args) {
     let (p_name, mut pid) = match args.cmd {
