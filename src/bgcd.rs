@@ -1,6 +1,7 @@
 use crate::{
     args::{Args, Cmd},
     cd::iface::CdIface,
+    data_path,
 };
 use std::{
     fs,
@@ -11,8 +12,7 @@ use std::{
 };
 
 pub fn bgcd_main(args: Args) {
-    let data_path = CdIface::get_data_path();
-    let data_path = data_path.data_local_dir();
+    let data_path = &data_path();
     if !fs::exists(data_path).unwrap() {
         println!("LOG: no data directory found, creating a new one.");
         fs::create_dir_all(data_path).unwrap();

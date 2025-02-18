@@ -1,4 +1,4 @@
-use crate::cd::iface::CdIface;
+use crate::{cd::iface::CdIface, data_path};
 use std::fs;
 
 #[derive(tabled::Tabled)]
@@ -21,8 +21,7 @@ impl LsOut {
 }
 
 pub fn cd_ls_main() {
-    let data_path = CdIface::get_data_path();
-    let data_path = data_path.data_local_dir();
+    let data_path = &data_path();
     let mut no_file = true;
     let mut statuses: Vec<LsOut> = Vec::new();
     for file in fs::read_dir(&data_path).unwrap() {

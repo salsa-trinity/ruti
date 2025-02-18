@@ -5,6 +5,8 @@ use std::{
     process,
 };
 
+use crate::data_path;
+
 // file format: filename is the pid
 // 0 - total: (or progress), the amout of time that has currently passed
 // 1 - target: the target time for the cd, cd ends when total reaches target
@@ -36,8 +38,7 @@ impl CdIface {
             + "\n"
             + &self.dn.to_string();
 
-        let path = ProjectDirs::from("com", "github", "ruti").unwrap();
-        let path = path.data_local_dir().join(self.pid.to_string());
+        let path = &data_path().join(self.pid.to_string());
         fs::write(path, out).unwrap();
     }
 
@@ -79,15 +80,13 @@ impl CdIface {
     }
 
     pub fn from_pid(pid: u32) -> Option<CdIface> {
-        let data_path = CdIface::get_data_path();
-        let data_path = data_path.data_local_dir();
+        let data_path = &data_path();
 
         CdIface::from_path(&data_path.join(pid.to_string()))
     }
 
     pub fn from_pn(pn: &str) -> Option<CdIface> {
-        let data_path = CdIface::get_data_path();
-        let data_path = data_path.data_local_dir();
+        let data_path = &data_path();
 
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
@@ -100,15 +99,5 @@ impl CdIface {
         }
 
         None
-    }
-
-    pub fn get_data_path() -> ProjectDirs {
-        match ProjectDirs::from("com", "github", "ruti") {
-            Some(p) => return p,
-            None => {
-                println!("Failed to get project direcory.");
-                process::exit(1);
-            }
-        };
     }
 }

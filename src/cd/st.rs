@@ -1,6 +1,7 @@
 use crate::{
     args::{Args, CdCmd, Cmd},
     cd::iface::CdIface,
+    data_path,
 };
 use std::{fs, path, process};
 
@@ -17,8 +18,7 @@ pub fn cd_st_main(args: Args) {
         },
         _ => panic!(""),
     };
-    let data_path = CdIface::get_data_path();
-    let data_path = data_path.data_local_dir();
+    let data_path = &data_path();
 
     let uid;
 

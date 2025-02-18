@@ -1,4 +1,8 @@
-use crate::{args::Args, args::CdCmd, args::Cmd, cd::iface::CdIface};
+use crate::{
+    args::{Args, CdCmd, Cmd},
+    cd::iface::CdIface,
+    data_path,
+};
 use std::{fs, os::unix::process::CommandExt, path, process};
 
 pub fn cd_rm_main(args: Args) {
@@ -9,8 +13,7 @@ pub fn cd_rm_main(args: Args) {
         },
         _ => panic!(""),
     };
-    let data_path = CdIface::get_data_path();
-    let data_path = data_path.data_local_dir();
+    let data_path = &data_path();
     // TODO: when rm a cd with a default name, remove it from the dn file
 
     let mut path = path::PathBuf::new();

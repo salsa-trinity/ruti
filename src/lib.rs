@@ -12,6 +12,5 @@ pub mod sw;
 
 pub fn data_path() -> std::path::PathBuf {
     let data_path = directories::ProjectDirs::from("com", "github", "ruti").unwrap();
-    let data_path = data_path.data_local_dir();
-    data_path.to_path_buf()
+    data_path.data_local_dir().to_path_buf()
 }
