@@ -1,12 +1,11 @@
-use directories::ProjectDirs;
+use crate::data_path;
 use std::{fs, process};
 
 pub fn cd_clean_main() {
-    let data_dir = ProjectDirs::from("com", "github", "ruti").unwrap();
-    let data_dir = data_dir.data_local_dir();
+    let data_path = &data_path();
 
     let mut count = 0;
-    for file in data_dir.read_dir().unwrap() {
+    for file in data_path.read_dir().unwrap() {
         let file = file.unwrap();
         count += 1;
         if file.file_name() != "dn" {
