@@ -104,13 +104,12 @@ fn bgcd(data_path: &Path, args: Args) {
         thread::sleep(Duration::from_millis(1));
         total += loop_time.elapsed();
     }
-    // TODO: notification code
 
-    //println!(
-    //    "total: {}, lifespan: {}",
-    //    total.as_secs_f64(),
-    //    life.elapsed().as_secs_f64()
-    //);
+    // notificaion code
+    process::Command::new("notify-send")
+        .arg("Countdown: ".to_owned() + &iface.pn + &" has ended.")
+        .spawn()
+        .unwrap();
 
     // remove files
     if name_num > -1 {
