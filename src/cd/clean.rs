@@ -2,19 +2,18 @@ use crate::data_path;
 use std::{fs, process};
 
 pub fn cd_clean_main() {
-    let data_path = &data_path();
-
     let mut count = 0;
-    for file in data_path.read_dir().unwrap() {
-        let file = file.unwrap();
+    for file in data_path().read_dir().unwrap() {
         count += 1;
+        let file = file.unwrap();
         if file.file_name() != "dn" {
-            let _ = process::Command::new("kill")
+            process::Command::new("kill")
                 .arg("-9")
                 .arg(&file.file_name())
                 .stdout(process::Stdio::null())
                 .stderr(process::Stdio::null())
-                .spawn();
+                .spawn()
+                .unwrap();
         }
         fs::remove_file(file.path()).unwrap();
     }
