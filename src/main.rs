@@ -32,7 +32,7 @@ fn main() {
 // - [x] args
 // - [x] iface
 // - [x] st
-// - [ ] clean
+// - [x] clean
 // - [ ] ls
 // - [ ] rm
 // - [ ] cd

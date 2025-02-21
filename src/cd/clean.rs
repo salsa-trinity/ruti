@@ -2,6 +2,7 @@ use crate::data_path;
 use std::{fs, process};
 
 pub fn cd_clean_main() {
+    // kill & rm files
     let mut count = 0;
     for file in data_path().read_dir().unwrap() {
         count += 1;
@@ -17,6 +18,8 @@ pub fn cd_clean_main() {
         }
         fs::remove_file(file.path()).unwrap();
     }
+
+    // print end status
     match count {
         0 => println!("Files already cleaned."),
         1 => println!("Successfully cleaned 1 file."),
