@@ -29,8 +29,8 @@ fn main() {
 // - [x] main
 // - [ ] bgcd
 // - [x] sw
-// - [ ] args
-// - [ ] iface
+// - [x] args
+// - [x] iface
 // - [x] st
 // - [ ] clean
 // - [ ] ls
