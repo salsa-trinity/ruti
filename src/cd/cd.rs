@@ -4,6 +4,8 @@ use std::process::Command;
 pub fn cd_main(args: Args) {
     let mut bgcd_args = Vec::new();
     let mut _len = 0f64;
+
+    // process args
     match args.cmd {
         Cmd::Cd {
             len,
@@ -24,6 +26,8 @@ pub fn cd_main(args: Args) {
         _ => {}
     }
     let len = _len;
+
+    // spawn bgcd
     Command::new("ruti")
         .arg("bg-cd")
         .arg(len.to_string())
