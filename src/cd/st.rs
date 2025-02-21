@@ -6,6 +6,7 @@ use crate::{
 use std::{fs, path, process};
 
 pub fn cd_st_main(args: Args) {
+    // init values
     let (p_name, pid, single, nameless) = match args.cmd {
         Cmd::Cd { cmd, .. } => match cmd {
             Some(CdCmd::St {
@@ -18,14 +19,13 @@ pub fn cd_st_main(args: Args) {
         },
         _ => panic!(""),
     };
-    let data_path = &data_path();
 
+    // get cd uid
     let uid;
-
     let mut path = path::PathBuf::new();
     if p_name.is_some() {
         let p_name = p_name.unwrap();
-        for file in fs::read_dir(&data_path).unwrap() {
+        for file in fs::read_dir(&data_path()).unwrap() {
             let file = file.unwrap();
             if &file.file_name() != "dn" {
                 if CdIface::from_path(&file.path()).unwrap().pn == p_name {
@@ -36,19 +36,18 @@ pub fn cd_st_main(args: Args) {
         uid = p_name;
     } else {
         let pid = pid.unwrap();
-        path = data_path.join(pid.to_string());
+        path = data_path().join(pid.to_string());
         uid = pid.to_string();
     };
 
+    // validate cd
     if !fs::exists(&path).unwrap() {
         println!("Please specify a valid cd.");
         process::exit(1);
     }
-    let iface = CdIface::from_path(&path).unwrap();
-    let total = iface.total;
-    let target = iface.target;
-    let left = target - total;
 
+    // print data
+    let iface = CdIface::from_path(&path).unwrap();
     if !single {
         if !nameless {
             println!("'{}' status:", uid);
@@ -57,9 +56,9 @@ pub fn cd_st_main(args: Args) {
             r"progress: {}s
 target:   {}s
 left:     {}s",
-            total.round(),
-            target.round(),
-            left.round()
+            iface.total.round(),
+            iface.target.round(),
+            (iface.target - iface.total).round()
         );
     } else {
         if !nameless {
@@ -67,9 +66,9 @@ left:     {}s",
         }
         println!(
             "{}s/{}s  ({}s)",
-            total.round(),
-            target.round(),
-            left.round()
+            iface.total.round(),
+            iface.target.round(),
+            (iface.target - iface.total).round()
         );
     }
 }

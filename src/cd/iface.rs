@@ -2,7 +2,6 @@ use directories::ProjectDirs;
 use std::{
     fs,
     path::{Path, PathBuf},
-    process,
 };
 
 use crate::data_path;
