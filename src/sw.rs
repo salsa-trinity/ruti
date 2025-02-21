@@ -23,11 +23,13 @@ pub fn sw_main(args: Args) {
 }
 
 fn listener_thread(tx: mpsc::Sender<&str>, raw_handle: RawTerminal<Stdout>) {
+    // keypresses
     let stdin = io::stdin();
     for c in stdin.keys() {
         match c.unwrap() {
             Key::Esc => {
                 tx.send("ESC").unwrap();
+                // fix ugly print bug
                 raw_handle.suspend_raw_mode().unwrap();
                 process::exit(1);
             }
@@ -62,11 +64,13 @@ fn loop_thread(rx: mpsc::Receiver<&str>, tx: mpsc::Sender<&str>, args: Args) {
             }
             Ok("PAUSE") => {
                 is_running = !is_running;
+                // pause lap
                 if !is_running && pl {
                     tx.send("LAP").unwrap();
                 }
             }
             Ok("LAP") => {
+                // print
                 println!(
                     "\rLap {}: {}s",
                     lap_count,
@@ -81,7 +85,7 @@ fn loop_thread(rx: mpsc::Receiver<&str>, tx: mpsc::Sender<&str>, args: Args) {
             _ => {}
         }
 
-        // end of loop
+        // end
         if is_running {
             print!("\rTime: {}s", total_time.as_millis() as f32 / 1000f32);
             io::stdout().flush().unwrap();

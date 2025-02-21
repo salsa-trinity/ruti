@@ -28,7 +28,7 @@ fn main() {
 // TODO: clean files
 // - [x] main
 // - [ ] bgcd
-// - [ ] sw
+// - [x] sw
 // - [ ] args
 // - [ ] iface
 // - [x] st
