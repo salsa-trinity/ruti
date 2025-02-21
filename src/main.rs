@@ -33,6 +33,6 @@ fn main() {
 // - [x] iface
 // - [x] st
 // - [x] clean
-// - [ ] ls
+// - [x] ls
 // - [ ] rm
 // - [ ] cd

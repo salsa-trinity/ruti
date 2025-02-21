@@ -1,6 +1,7 @@
 use crate::{cd::iface::CdIface, data_path};
 use std::fs;
 
+// struct for it to work with tabled
 #[derive(tabled::Tabled)]
 struct LsOut {
     name: String,
@@ -21,6 +22,7 @@ impl LsOut {
 }
 
 pub fn cd_ls_main() {
+    // push statuses
     let data_path = &data_path();
     let mut no_file = true;
     let mut statuses: Vec<LsOut> = Vec::new();
@@ -33,6 +35,8 @@ pub fn cd_ls_main() {
             no_file = false;
         }
     }
+
+    // print ls
     if no_file {
         println!("No cd running.");
     } else {
