@@ -34,5 +34,5 @@ fn main() {
 // - [x] st
 // - [x] clean
 // - [x] ls
-// - [ ] rm
+// - [x] rm
 // - [x] cd

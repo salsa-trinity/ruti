@@ -18,6 +18,7 @@ pub fn cd_rm_main(args: Args) {
 
     let mut path = path::PathBuf::new();
     if p_name.is_some() {
+        // path by pn
         let p_name = p_name.clone().unwrap();
         for file in fs::read_dir(&data_path).unwrap() {
             let file = file.unwrap();
@@ -35,8 +36,11 @@ pub fn cd_rm_main(args: Args) {
             }
         }
     } else {
+        // path by pid
         path = data_path.join(pid.unwrap().to_string());
     };
+
+    // verify pid
     let pid = match pid {
         Some(p) => p,
         None => {
@@ -44,12 +48,15 @@ pub fn cd_rm_main(args: Args) {
             process::exit(1);
         }
     };
+
+    // verify path
     if !fs::exists(&path).unwrap() {
         println!("Please specify a valid cd.");
         process::exit(1);
     }
-    fs::remove_file(pid.to_string()).unwrap();
 
+    // rm & kill
+    fs::remove_file(pid.to_string()).unwrap();
     process::Command::new("kill")
         .arg("-9")
         .arg(&pid.to_string())
